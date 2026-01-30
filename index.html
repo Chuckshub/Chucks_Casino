@@ -2478,7 +2478,7 @@
                                     display: flex;
                                     flex-direction: column;
                                     justify-content: space-between;
-                                    padding: 4px 2px;
+                                    padding: 5px 3px;
                                     box-shadow: ${isWinner ? '0 0 5px rgba(255,255,0,0.8)' : '0 1px 2px rgba(0,0,0,0.3)'};
                                 `;
                                 
@@ -2509,10 +2509,10 @@
                                     line-height: 1;
                                     transform: rotate(180deg);
                                     color: ${isRed ? '#DD0000' : '#000000'};
-                                    font-size: 11px;
+                                    font-size: 10px;
                                     font-weight: bold;
                                 `;
-                                bottomCorner.innerHTML = `${card.rank}<br><span style="font-size: 10px;">${card.suit}</span>`;
+                                bottomCorner.innerHTML = `${card.rank}<br><span style="font-size: 9px;">${card.suit}</span>`;
                                 
                                 cardDiv.appendChild(topCorner);
                                 cardDiv.appendChild(centerSuit);
