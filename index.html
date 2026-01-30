@@ -2226,10 +2226,19 @@
                 
                 this.state = 'result';
                 
+                // Draw new cards for each hand independently
                 for (let handIdx = 0; handIdx < this.hands.length; handIdx++) {
                     for (let cardIdx = 0; cardIdx < 5; cardIdx++) {
                         if (!this.held[cardIdx]) {
-                            this.hands[handIdx][cardIdx] = this.deck.deal(1)[0];
+                            const newCard = this.deck.deal(1)[0];
+                            if (newCard) {
+                                this.hands[handIdx][cardIdx] = newCard;
+                            } else {
+                                console.error('Deck ran out of cards!');
+                                // Reset deck and continue
+                                this.deck.reset();
+                                this.hands[handIdx][cardIdx] = this.deck.deal(1)[0];
+                            }
                         }
                     }
                 }
@@ -2345,7 +2354,7 @@
                 cardsArea.style.flexDirection = 'column';
                 cardsArea.style.gap = '5px';
                 cardsArea.style.alignItems = 'center';
-                cardsArea.style.marginTop = '20px';
+                cardsArea.style.marginTop = '5px';
                 
                 const numHands = this.getNumHands();
                 const numSmallHands = numHands - 1;
@@ -2408,7 +2417,7 @@
                 cardsArea.style.flexDirection = 'column';
                 cardsArea.style.gap = '5px';
                 cardsArea.style.alignItems = 'center';
-                cardsArea.style.marginTop = '20px';
+                cardsArea.style.marginTop = '5px';
                 
                 if (this.hands.length === 0) return;
                 
