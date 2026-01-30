@@ -2343,8 +2343,9 @@
                 cardsArea.innerHTML = '';
                 cardsArea.style.display = 'flex';
                 cardsArea.style.flexDirection = 'column';
-                cardsArea.style.gap = '4px';
+                cardsArea.style.gap = '5px';
                 cardsArea.style.alignItems = 'center';
+                cardsArea.style.marginTop = '20px';
                 
                 const numHands = this.getNumHands();
                 const numSmallHands = numHands - 1;
@@ -2353,17 +2354,17 @@
                 // Render grid - each row has 5 HANDS (each hand = 5 tiny cards)
                 for (let row = 0; row < rows; row++) {
                     const rowContainer = document.createElement('div');
-                    rowContainer.style.cssText = 'display: flex; gap: 4px;';
+                    rowContainer.style.cssText = 'display: flex; gap: 5px;';
                     
                     for (let col = 0; col < 5; col++) {
                         const handIdx = row * 5 + col;
                         if (handIdx < numSmallHands) {
                             // Create a mini-hand container (5 tiny cards)
                             const miniHand = document.createElement('div');
-                            miniHand.style.cssText = 'display: flex; gap: 1px;';
+                            miniHand.style.cssText = 'display: flex; gap: 2px;';
                             
                             for (let cardIdx = 0; cardIdx < 5; cardIdx++) {
-                                miniHand.appendChild(createCardBack(24, 34));
+                                miniHand.appendChild(createCardBack(32, 46));
                             }
                             
                             rowContainer.appendChild(miniHand);
@@ -2375,7 +2376,7 @@
                 
                 // Add base hand at bottom (5 larger cards)
                 const baseHandContainer = document.createElement('div');
-                baseHandContainer.style.cssText = 'display: flex; gap: 8px; margin-top: 10px;';
+                baseHandContainer.style.cssText = 'display: flex; gap: 8px; margin-top: 15px;';
                 
                 for (let i = 0; i < 5; i++) {
                     const wrapper = document.createElement('div');
@@ -2405,8 +2406,9 @@
                 cardsArea.innerHTML = '';
                 cardsArea.style.display = 'flex';
                 cardsArea.style.flexDirection = 'column';
-                cardsArea.style.gap = '4px';
+                cardsArea.style.gap = '5px';
                 cardsArea.style.alignItems = 'center';
+                cardsArea.style.marginTop = '20px';
                 
                 if (this.hands.length === 0) return;
                 
@@ -2416,7 +2418,7 @@
                 // Render grid - each position shows 5 tiny cards
                 for (let row = 0; row < rows; row++) {
                     const rowContainer = document.createElement('div');
-                    rowContainer.style.cssText = 'display: flex; gap: 4px;';
+                    rowContainer.style.cssText = 'display: flex; gap: 5px;';
                     
                     for (let col = 0; col < 5; col++) {
                         const handIdx = row * 5 + col;
@@ -2429,9 +2431,17 @@
                             const miniHand = document.createElement('div');
                             miniHand.style.cssText = `
                                 display: flex;
-                                gap: 1px;
+                                gap: 2px;
                                 ${isWinner ? 'filter: brightness(1.3); box-shadow: 0 0 10px rgba(255,255,0,0.8);' : ''}
                             `;
+                            
+                            // Add draw animation based on position
+                            if (this.state === 'result') {
+                                miniHand.style.animation = `dealCard 0.3s ease-out`;
+                                miniHand.style.animationDelay = `${handIdx * 0.02}s`;
+                                miniHand.style.opacity = '0';
+                                miniHand.style.animationFillMode = 'forwards';
+                            }
                             
                             // Render 5 tiny cards for this hand
                             hand.forEach(card => {
@@ -2439,8 +2449,8 @@
                                 const isRed = card.suit === '♥' || card.suit === '♦';
                                 
                                 cardDiv.style.cssText = `
-                                    width: 24px;
-                                    height: 34px;
+                                    width: 32px;
+                                    height: 46px;
                                     background: ${isWinner ? '#FFFFDD' : '#FFFFFF'};
                                     border: 1px solid ${isWinner ? '#FFFF00' : '#333'};
                                     border-radius: 2px;
