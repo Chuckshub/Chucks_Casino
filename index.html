@@ -2325,26 +2325,35 @@
             }
 
             newGame() {
-                if (this.cash >= this.bet * this.getNumHands()) {
-                    this.state = 'betting';
-                    const maxBet = Math.floor(this.cash / 6);
-                    this.bet = Math.min(this.bet, Math.max(1, maxBet));
-                    
-                    this.hands = [];
-                    this.baseHand = [];
-                    this.held = [false, false, false, false, false];
-                    this.handResults = [];
-                    
+                this.state = 'betting';
+                
+                // Adjust bet if not enough cash
+                const minHandsNeeded = 6; // Minimum (bet 1 = 6 hands)
+                if (this.cash < minHandsNeeded) {
+                    // Not enough for any bet, but don't show game over
                     this.renderCardBacks();
-                    
                     document.getElementById('result-controls').classList.add('hidden');
                     document.getElementById('betting-controls').classList.remove('hidden');
                     document.getElementById('result').innerHTML = '&nbsp;';
-                    
                     this.updateDisplay();
-                } else {
-                    document.getElementById('result').textContent = 'GAME OVER - No Credits!';
+                    return;
                 }
+                
+                const maxBet = Math.floor(this.cash / 6);
+                this.bet = Math.min(this.bet, Math.max(1, maxBet));
+                
+                this.hands = [];
+                this.baseHand = [];
+                this.held = [false, false, false, false, false];
+                this.handResults = [];
+                
+                this.renderCardBacks();
+                
+                document.getElementById('result-controls').classList.add('hidden');
+                document.getElementById('betting-controls').classList.remove('hidden');
+                document.getElementById('result').innerHTML = '&nbsp;';
+                
+                this.updateDisplay();
             }
 
             renderCardBacks() {
@@ -2373,7 +2382,7 @@
                             miniHand.style.cssText = 'display: flex; gap: 2px;';
                             
                             for (let cardIdx = 0; cardIdx < 5; cardIdx++) {
-                                miniHand.appendChild(createCardBack(48, 68));
+                                miniHand.appendChild(createCardBack(46, 66));
                             }
                             
                             rowContainer.appendChild(miniHand);
@@ -2461,23 +2470,79 @@
                                 const isRed = card.suit === '♥' || card.suit === '♦';
                                 
                                 cardDiv.style.cssText = `
-                                    width: 48px;
-                                    height: 68px;
+                                    width: 46px;
+                                    height: 66px;
                                     background: ${isWinner ? '#FFFFDD' : '#FFFFFF'};
                                     border: 1px solid ${isWinner ? '#FFFF00' : '#333'};
-                                    border-radius: 2px;
+                                    border-radius: 3px;
                                     display: flex;
                                     flex-direction: column;
-                                    justify-content: center;
-                                    align-items: center;
-                                    font-size: 8px;
-                                    font-weight: bold;
-                                    color: ${isRed ? '#DD0000' : '#000000'};
+                                    justify-content: space-between;
+                                    padding: 2px;
+                                    box-shadow: ${isWinner ? '0 0 5px rgba(255,255,0,0.8)' : '0 1px 2px rgba(0,0,0,0.3)'};
                                 `;
                                 
-                                cardDiv.innerHTML = `${card.rank}<br>${card.suit}`;
+                                // Top corner
+                                const topCorner = document.createElement('div');
+                                topCorner.style.cssText = `
+                                    text-align: left;
+                                    line-height: 1;
+                                    color: ${isRed ? '#DD0000' : '#000000'};
+                                    font-size: 11px;
+                                    font-weight: bold;
+                                `;
+                                topCorner.innerHTML = `${card.rank}<br><span style="font-size: 10px;">${card.suit}</span>`;
+                                
+                                // Center suit
+                                const centerSuit = document.createElement('div');
+                                centerSuit.style.cssText = `
+                                    text-align: center;
+                                    font-size: 20px;
+                                    color: ${isRed ? '#DD0000' : '#000000'};
+                                `;
+                                centerSuit.textContent = card.suit;
+                                
+                                // Bottom corner (rotated)
+                                const bottomCorner = document.createElement('div');
+                                bottomCorner.style.cssText = `
+                                    text-align: right;
+                                    line-height: 1;
+                                    transform: rotate(180deg);
+                                    color: ${isRed ? '#DD0000' : '#000000'};
+                                    font-size: 11px;
+                                    font-weight: bold;
+                                `;
+                                bottomCorner.innerHTML = `${card.rank}<br><span style="font-size: 10px;">${card.suit}</span>`;
+                                
+                                cardDiv.appendChild(topCorner);
+                                cardDiv.appendChild(centerSuit);
+                                cardDiv.appendChild(bottomCorner);
+                                
                                 miniHand.appendChild(cardDiv);
                             });
+                            
+                            // Add hand label below if winner
+                            if (isWinner && result.handType) {
+                                const handLabel = document.createElement('div');
+                                handLabel.style.cssText = `
+                                    position: absolute;
+                                    bottom: -15px;
+                                    left: 50%;
+                                    transform: translateX(-50%);
+                                    background: rgba(255, 255, 0, 0.9);
+                                    color: #0000AA;
+                                    padding: 2px 4px;
+                                    font-size: 9px;
+                                    font-weight: bold;
+                                    border-radius: 2px;
+                                    white-space: nowrap;
+                                `;
+                                handLabel.textContent = `${result.handType} $${result.winAmount}`;
+                                
+                                miniHand.style.position = 'relative';
+                                miniHand.style.marginBottom = '18px';
+                                miniHand.appendChild(handLabel);
+                            }
                             
                             rowContainer.appendChild(miniHand);
                         }
