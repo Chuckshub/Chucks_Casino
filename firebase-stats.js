@@ -12,17 +12,31 @@ const firebaseConfig = {
 
 // Import Firebase SDK (using CDN in HTML)
 let db = null;
+let firebaseInitialized = false;
 
 // Initialize Firebase
 function initFirebase() {
   try {
-    if (typeof firebase !== 'undefined') {
-      firebase.initializeApp(firebaseConfig);
-      db = firebase.firestore();
-      console.log('Firebase initialized successfully');
+    if (typeof firebase === 'undefined') {
+      console.error('Firebase SDK not loaded');
+      return false;
     }
+    
+    // Check if config has placeholder values
+    if (firebaseConfig.apiKey === "YOUR_API_KEY" || 
+        firebaseConfig.projectId === "YOUR_PROJECT_ID") {
+      console.warn('Firebase not configured - using placeholder values');
+      return false;
+    }
+    
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+    firebaseInitialized = true;
+    console.log('Firebase initialized successfully');
+    return true;
   } catch (error) {
     console.error('Firebase initialization error:', error);
+    return false;
   }
 }
 
@@ -141,3 +155,4 @@ function groupByGame(results) {
 // Export for use in HTML
 window.stats = stats;
 window.initFirebase = initFirebase;
+window.isFirebaseConfigured = () => firebaseInitialized;
