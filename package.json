@@ -1,0 +1,12 @@
+{
+  "name": "casino-poker",
+  "version": "1.0.0",
+  "description": "Video Poker Casino Games",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'No build needed for static site'"
+  },
+  "dependencies": {
+    "firebase": "^10.7.1"
+  }
+}
