@@ -2940,11 +2940,10 @@ class SpinPokerGame {
                 document.getElementById('key-help').textContent = 'Keys: 1-5 (bet/hold) | M (max bet) | SPACE/D (deal/draw) | ENTER (continue)';
                 game = new VideoPokerGame(gameType);
             } else if (gameType === 'multihand') {
-                document.getElementById('game-variant').textContent = '[ MULTI-HAND POKER - DYNAMIC HANDS ]';
+                document.getElementById('game-variant').textContent = '[ MULTI-HAND POKER - DYNAMIC ]';
                 document.getElementById('action-button').textContent = 'DRAW';
                 document.getElementById('key-help').textContent = 'Keys: 1-5 (bet/hold) | M (max bet) | SPACE/D (deal/draw) | ENTER (continue)';
                 game = new MultiHandPokerGame();
-                showHandSelectPopup(); // Show hand selection popup
             } else if (gameType === 'spinpoker') {
                 document.getElementById('game-variant').textContent = '[ SPIN POKER - 3 LINES ]';
                 document.getElementById('action-button').textContent = 'DRAW';
