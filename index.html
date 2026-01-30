@@ -110,7 +110,7 @@
             text-align: center;
             color: #AAAAFF;
             font-size: 16px;
-            margin-bottom: 15px;
+            margin-bottom: 5px;
             min-height: 20px;
         }
 
@@ -189,7 +189,7 @@
             color: #FFFF00;
             font-size: 18px;
             font-weight: bold;
-            margin: 10px 0;
+            margin: 5px 0;
             min-height: 25px;
         }
         
@@ -2354,7 +2354,7 @@
                 cardsArea.style.flexDirection = 'column';
                 cardsArea.style.gap = '5px';
                 cardsArea.style.alignItems = 'center';
-                cardsArea.style.marginTop = '5px';
+                cardsArea.style.marginTop = '0px';
                 
                 const numHands = this.getNumHands();
                 const numSmallHands = numHands - 1;
@@ -2363,7 +2363,7 @@
                 // Render grid - each row has 5 HANDS (each hand = 5 tiny cards)
                 for (let row = 0; row < rows; row++) {
                     const rowContainer = document.createElement('div');
-                    rowContainer.style.cssText = 'display: flex; gap: 5px;';
+                    rowContainer.style.cssText = 'display: flex; gap: 3px;';
                     
                     for (let col = 0; col < 5; col++) {
                         const handIdx = row * 5 + col;
@@ -2373,7 +2373,7 @@
                             miniHand.style.cssText = 'display: flex; gap: 2px;';
                             
                             for (let cardIdx = 0; cardIdx < 5; cardIdx++) {
-                                miniHand.appendChild(createCardBack(32, 46));
+                                miniHand.appendChild(createCardBack(48, 68));
                             }
                             
                             rowContainer.appendChild(miniHand);
@@ -2405,7 +2405,10 @@
 
             updateDisplay() {
                 const numHands = this.getNumHands();
-                document.getElementById('pay-table').innerHTML = '';
+                const payTable = document.getElementById('pay-table');
+                payTable.innerHTML = '';
+                payTable.style.minHeight = '0';
+                payTable.style.margin = '0';
                 document.getElementById('info-bar').innerHTML = 
                     `BET: $${this.bet} x ${numHands} = $${this.bet * numHands}     HANDS: ${numHands}     CASH: $${this.cash}`;
             }
@@ -2417,7 +2420,7 @@
                 cardsArea.style.flexDirection = 'column';
                 cardsArea.style.gap = '5px';
                 cardsArea.style.alignItems = 'center';
-                cardsArea.style.marginTop = '5px';
+                cardsArea.style.marginTop = '0px';
                 
                 if (this.hands.length === 0) return;
                 
@@ -2427,7 +2430,7 @@
                 // Render grid - each position shows 5 tiny cards
                 for (let row = 0; row < rows; row++) {
                     const rowContainer = document.createElement('div');
-                    rowContainer.style.cssText = 'display: flex; gap: 5px;';
+                    rowContainer.style.cssText = 'display: flex; gap: 3px;';
                     
                     for (let col = 0; col < 5; col++) {
                         const handIdx = row * 5 + col;
@@ -2458,8 +2461,8 @@
                                 const isRed = card.suit === '♥' || card.suit === '♦';
                                 
                                 cardDiv.style.cssText = `
-                                    width: 32px;
-                                    height: 46px;
+                                    width: 48px;
+                                    height: 68px;
                                     background: ${isWinner ? '#FFFFDD' : '#FFFFFF'};
                                     border: 1px solid ${isWinner ? '#FFFF00' : '#333'};
                                     border-radius: 2px;
