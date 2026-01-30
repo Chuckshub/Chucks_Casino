@@ -2382,7 +2382,7 @@
                             miniHand.style.cssText = 'display: flex; gap: 2px;';
                             
                             for (let cardIdx = 0; cardIdx < 5; cardIdx++) {
-                                miniHand.appendChild(createCardBack(46, 66));
+                                miniHand.appendChild(createCardBack(44, 66));
                             }
                             
                             rowContainer.appendChild(miniHand);
@@ -2470,7 +2470,7 @@
                                 const isRed = card.suit === '♥' || card.suit === '♦';
                                 
                                 cardDiv.style.cssText = `
-                                    width: 46px;
+                                    width: 44px;
                                     height: 66px;
                                     background: ${isWinner ? '#FFFFDD' : '#FFFFFF'};
                                     border: 1px solid ${isWinner ? '#FFFF00' : '#333'};
@@ -2478,7 +2478,7 @@
                                     display: flex;
                                     flex-direction: column;
                                     justify-content: space-between;
-                                    padding: 2px;
+                                    padding: 3px 2px;
                                     box-shadow: ${isWinner ? '0 0 5px rgba(255,255,0,0.8)' : '0 1px 2px rgba(0,0,0,0.3)'};
                                 `;
                                 
