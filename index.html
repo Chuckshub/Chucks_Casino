@@ -2167,6 +2167,7 @@
                 this.gameType = 'jacks';
                 this.payTable = PAY_TABLES.jacks;
                 this.cardsToAnimate = [];
+                this.handResults = [];
             }
 
             getNumHands() {
@@ -2204,6 +2205,7 @@
                 
                 this.held = [false, false, false, false, false];
                 this.state = 'holding';
+                this.handResults = [];
                 
                 document.getElementById('betting-controls').classList.add('hidden');
                 document.getElementById('holding-controls').classList.remove('hidden');
@@ -2232,24 +2234,28 @@
                     }
                 }
                 
-                this.renderCards();
                 this.evaluateAllHands();
+                this.renderCards();
             }
 
             evaluateAllHands() {
                 let totalWin = 0;
+                this.handResults = [];
                 
                 for (let handIdx = 0; handIdx < this.hands.length; handIdx++) {
                     const handType = this.getHandType(this.hands[handIdx]);
+                    let winAmount = 0;
                     
                     if (handType && this.payTable[handType]) {
-                        const winAmount = this.payTable[handType][this.bet - 1];
+                        winAmount = this.payTable[handType][this.bet - 1];
                         totalWin += winAmount;
                         
                         if (window.stats && window.stats.handPlayed) {
                             window.stats.handPlayed('multihand', handType, this.bet, winAmount);
                         }
                     }
+                    
+                    this.handResults[handIdx] = { handType, winAmount };
                 }
                 
                 if (window.stats && window.stats.gameResult) {
@@ -2318,6 +2324,7 @@
                     this.hands = [];
                     this.baseHand = [];
                     this.held = [false, false, false, false, false];
+                    this.handResults = [];
                     
                     this.renderCardBacks();
                     
@@ -2336,24 +2343,30 @@
                 cardsArea.innerHTML = '';
                 cardsArea.style.display = 'flex';
                 cardsArea.style.flexDirection = 'column';
-                cardsArea.style.gap = '3px';
-                cardsArea.style.alignItems = 'stretch';
-                cardsArea.style.width = '100%';
+                cardsArea.style.gap = '4px';
+                cardsArea.style.alignItems = 'center';
                 
                 const numHands = this.getNumHands();
                 const numSmallHands = numHands - 1;
-                
                 const rows = Math.ceil(numSmallHands / 5);
                 
-                // Render grid of small card backs (each "card" represents one hand)
+                // Render grid - each row has 5 HANDS (each hand = 5 tiny cards)
                 for (let row = 0; row < rows; row++) {
                     const rowContainer = document.createElement('div');
-                    rowContainer.style.cssText = 'display: flex; gap: 3px; justify-content: center;';
+                    rowContainer.style.cssText = 'display: flex; gap: 4px;';
                     
                     for (let col = 0; col < 5; col++) {
                         const handIdx = row * 5 + col;
                         if (handIdx < numSmallHands) {
-                            rowContainer.appendChild(createCardBack(50, 72));
+                            // Create a mini-hand container (5 tiny cards)
+                            const miniHand = document.createElement('div');
+                            miniHand.style.cssText = 'display: flex; gap: 1px;';
+                            
+                            for (let cardIdx = 0; cardIdx < 5; cardIdx++) {
+                                miniHand.appendChild(createCardBack(24, 34));
+                            }
+                            
+                            rowContainer.appendChild(miniHand);
                         }
                     }
                     
@@ -2362,10 +2375,19 @@
                 
                 // Add base hand at bottom (5 larger cards)
                 const baseHandContainer = document.createElement('div');
-                baseHandContainer.style.cssText = 'display: flex; gap: 8px; margin-top: 10px; justify-content: center;';
+                baseHandContainer.style.cssText = 'display: flex; gap: 8px; margin-top: 10px;';
                 
                 for (let i = 0; i < 5; i++) {
-                    baseHandContainer.appendChild(createCardBack(110, 155));
+                    const wrapper = document.createElement('div');
+                    wrapper.style.cssText = 'display: flex; flex-direction: column; align-items: center;';
+                    
+                    const heldLabel = document.createElement('div');
+                    heldLabel.style.cssText = 'color: #FFFF00; font-size: 14px; font-weight: bold; height: 18px; margin-bottom: 3px;';
+                    heldLabel.innerHTML = '&nbsp;';
+                    
+                    wrapper.appendChild(heldLabel);
+                    wrapper.appendChild(createCardBack(110, 155));
+                    baseHandContainer.appendChild(wrapper);
                 }
                 
                 cardsArea.appendChild(baseHandContainer);
@@ -2383,64 +2405,68 @@
                 cardsArea.innerHTML = '';
                 cardsArea.style.display = 'flex';
                 cardsArea.style.flexDirection = 'column';
-                cardsArea.style.gap = '3px';
-                cardsArea.style.alignItems = 'stretch';
-                cardsArea.style.width = '100%';
+                cardsArea.style.gap = '4px';
+                cardsArea.style.alignItems = 'center';
                 
                 if (this.hands.length === 0) return;
                 
                 const numSmallHands = this.hands.length - 1;
                 const rows = Math.ceil(numSmallHands / 5);
                 
-                // Render grid (each position shows one COMPLETE hand as a tiny card)
+                // Render grid - each position shows 5 tiny cards
                 for (let row = 0; row < rows; row++) {
                     const rowContainer = document.createElement('div');
-                    rowContainer.style.cssText = 'display: flex; gap: 3px; justify-content: center;';
+                    rowContainer.style.cssText = 'display: flex; gap: 4px;';
                     
                     for (let col = 0; col < 5; col++) {
                         const handIdx = row * 5 + col;
                         if (handIdx < numSmallHands) {
-                            // Show just the first card of this hand as a representative
                             const hand = this.hands[handIdx];
-                            const card = hand[0];
+                            const result = this.handResults[handIdx];
+                            const isWinner = result && result.winAmount > 0;
                             
-                            const cardDiv = document.createElement('div');
-                            const isRed = card.suit === '♥' || card.suit === '♦';
-                            
-                            cardDiv.style.cssText = `
-                                width: 50px;
-                                height: 72px;
-                                background: #FFFFFF;
-                                border: 1px solid #333;
-                                border-radius: 3px;
+                            // Container for one hand (5 tiny cards)
+                            const miniHand = document.createElement('div');
+                            miniHand.style.cssText = `
                                 display: flex;
-                                flex-direction: column;
-                                justify-content: space-between;
-                                padding: 2px;
-                                box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+                                gap: 1px;
+                                ${isWinner ? 'filter: brightness(1.3); box-shadow: 0 0 10px rgba(255,255,0,0.8);' : ''}
                             `;
                             
-                            const topCorner = document.createElement('div');
-                            topCorner.style.cssText = `text-align: left; color: ${isRed ? '#DD0000' : '#000000'}; font-size: 10px; font-weight: bold; line-height: 1;`;
-                            topCorner.innerHTML = `${card.rank}<br>${card.suit}`;
+                            // Render 5 tiny cards for this hand
+                            hand.forEach(card => {
+                                const cardDiv = document.createElement('div');
+                                const isRed = card.suit === '♥' || card.suit === '♦';
+                                
+                                cardDiv.style.cssText = `
+                                    width: 24px;
+                                    height: 34px;
+                                    background: ${isWinner ? '#FFFFDD' : '#FFFFFF'};
+                                    border: 1px solid ${isWinner ? '#FFFF00' : '#333'};
+                                    border-radius: 2px;
+                                    display: flex;
+                                    flex-direction: column;
+                                    justify-content: center;
+                                    align-items: center;
+                                    font-size: 8px;
+                                    font-weight: bold;
+                                    color: ${isRed ? '#DD0000' : '#000000'};
+                                `;
+                                
+                                cardDiv.innerHTML = `${card.rank}<br>${card.suit}`;
+                                miniHand.appendChild(cardDiv);
+                            });
                             
-                            const centerSuit = document.createElement('div');
-                            centerSuit.style.cssText = `text-align: center; font-size: 20px; color: ${isRed ? '#DD0000' : '#000000'};`;
-                            centerSuit.textContent = card.suit;
-                            
-                            cardDiv.appendChild(topCorner);
-                            cardDiv.appendChild(centerSuit);
-                            
-                            rowContainer.appendChild(cardDiv);
+                            rowContainer.appendChild(miniHand);
                         }
                     }
                     
                     cardsArea.appendChild(rowContainer);
                 }
                 
-                // Render base hand at bottom (the 5 cards you can click)
+                // Render base hand at bottom
                 const baseHandContainer = document.createElement('div');
-                baseHandContainer.style.cssText = 'display: flex; gap: 8px; margin-top: 10px; justify-content: center;';
+                baseHandContainer.style.cssText = 'display: flex; gap: 8px; margin-top: 10px;';
                 
                 this.baseHand.forEach((card, cardIdx) => {
                     const cardWrapper = document.createElement('div');
@@ -2448,7 +2474,7 @@
                     
                     const heldLabel = document.createElement('div');
                     heldLabel.textContent = this.held[cardIdx] ? 'HELD' : '';
-                    heldLabel.style.cssText = 'color: #FFFF00; font-size: 14px; font-weight: bold; height: 18px; margin-bottom: 4px;';
+                    heldLabel.style.cssText = 'color: #FFFF00; font-size: 14px; font-weight: bold; height: 18px; margin-bottom: 3px;';
                     
                     const cardDiv = document.createElement('div');
                     const isRed = card.suit === '♥' || card.suit === '♦';
@@ -2477,7 +2503,7 @@
                     
                     const topCorner = document.createElement('div');
                     topCorner.style.cssText = `text-align: left; line-height: 1; color: ${isRed ? '#DD0000' : '#000000'};`;
-                    topCorner.innerHTML = `<div style="font-size: 22px; font-weight: bold;">${card.rank}</div><div style="font-size: 18px;">${card.suit}</div>`;
+                    topCorner.innerHTML = `<div style="font-size: 20px; font-weight: bold;">${card.rank}</div><div style="font-size: 18px;">${card.suit}</div>`;
                     
                     const centerSuit = document.createElement('div');
                     centerSuit.style.cssText = `text-align: center; font-size: 42px; color: ${isRed ? '#DD0000' : '#000000'};`;
@@ -2485,7 +2511,7 @@
                     
                     const bottomCorner = document.createElement('div');
                     bottomCorner.style.cssText = `text-align: right; line-height: 1; transform: rotate(180deg); color: ${isRed ? '#DD0000' : '#000000'};`;
-                    bottomCorner.innerHTML = `<div style="font-size: 22px; font-weight: bold;">${card.rank}</div><div style="font-size: 18px;">${card.suit}</div>`;
+                    bottomCorner.innerHTML = `<div style="font-size: 20px; font-weight: bold;">${card.rank}</div><div style="font-size: 18px;">${card.suit}</div>`;
                     
                     cardDiv.appendChild(topCorner);
                     cardDiv.appendChild(centerSuit);
