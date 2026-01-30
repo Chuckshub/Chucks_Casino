@@ -3,12 +3,12 @@
 // Get your config from: Firebase Console > Project Settings > Your apps > Config
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY_HERE",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyBjMjWd8Fc3BYk2ZjooMtriG3DkHVkCnzQ",
+  authDomain: "chuckscasino.firebaseapp.com",
+  projectId: "chuckscasino",
+  storageBucket: "chuckscasino.firebasestorage.app",
+  messagingSenderId: "780317874494",
+  appId: "1:780317874494:web:ed551bbba6d4396884b46f"
 };
 
 // Import Firebase SDK (using CDN in HTML)
