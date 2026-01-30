@@ -1,0 +1,8 @@
+{
+  "name": "casino-poker",
+  "version": "1.0.0",
+  "description": "Video Poker Casino Games with Firebase Stats",
+  "dependencies": {
+    "firebase-admin": "^12.0.0"
+  }
+}
