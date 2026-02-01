@@ -101,15 +101,15 @@
             color: #AAAAFF;
         }
 
-        .title {
-            text-align: center;
-            color: #FFFF00;
-            font-size: 32px;
-            font-weight: bold;
-            letter-spacing: 10px;
-            margin-bottom: 8px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        }
+        //         .title {
+        //             text-align: center;
+        //             color: #FFFF00;
+        //             font-size: 32px;
+        //             font-weight: bold;
+        //             letter-spacing: 10px;
+        //             margin-bottom: 8px;
+        //             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        //         }
 
         .game-variant {
             display: none;
@@ -2161,17 +2161,17 @@
                 let payTableHTML = '';
                 const hands = Object.keys(this.payTable);
                 
-                payTableHTML += 'Hand                  1      2      3      4      5\n';
-                payTableHTML += '======================================================\n';
                 
                 hands.forEach(hand => {
-                    let line = hand.toUpperCase().padEnd(20, '.') + '  ';
+                    let line = hand.toUpperCase().padEnd(22, '.') + '  ';
                     for (let i = 0; i < 5; i++) {
                         const payout = this.payTable[hand][i].toString().padStart(5, ' ');
                         if (i === this.bet - 1) {
-                            line += `<span class="highlight">${payout}</span> `;
+                            line += `<span class="highlight">${payout}</span>`;
+                        if (i < 4) line += ' |';
                         } else {
-                            line += payout + ' ';
+                            line += payout ;
+                        if (i < 4) line += ' |';
                         }
                     }
                     payTableHTML += line + '\n';
