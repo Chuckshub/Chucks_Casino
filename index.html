@@ -3137,12 +3137,15 @@
                 e.preventDefault();
             }
             
-            // Spacebar for Deal
+            // Spacebar for Deal and Draw
             if (key === ' ') {
                 if (game.state === 'betting') {
                     game.deal();
+                    e.preventDefault();
+                } else if (game.state === 'holding' && game.draw) {
+                    game.draw();
+                    e.preventDefault();
                 }
-                e.preventDefault();
             }
             
             // Enter for Continue
@@ -3155,8 +3158,8 @@
             
             // Game-specific controls
             if (currentGameType === 'jacks' || currentGameType === 'deuces' || currentGameType === 'multihand') {
-                // D key or Space for Draw in video poker
-                if ((key === 'd' || key === ' ') && game.state === 'holding') {
+                // D key for Draw in video poker (space is handled above)
+                if (key === 'd' && game.state === 'holding') {
                     game.draw();
                     e.preventDefault();
                 }
