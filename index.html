@@ -617,7 +617,7 @@
             <div class="controls">
                 <div id="betting-controls" class="casino-controls">
                     <div style="color: transparent; font-size: 28px; font-weight: bold; margin-right: 20px; min-width: 200px;">
-                        CASH: $0000
+                        CASH $0000
                     </div>
                     <button onclick="returnToHome()" class="control-btn">MENU</button>
                     <button onclick="console.log('Options')" class="control-btn">OPTIONS</button>
@@ -629,13 +629,13 @@
                     <button onclick="betUp()" class="control-btn">BET UP</button>
                     <button onclick="betMax()" class="control-btn">BET MAX</button>
                     <button onclick="game.deal()" class="control-btn control-btn-deal" id="deal-draw-btn">DEAL</button>
-                    <div style="color: #CC0000; font-size: 28px; font-weight: bold; margin-left: 20px; min-width: 200px;">
-                        CASH: $<span id="game-cash-display">1000</span>
+                    <div style="color: #CC0000; font-size: 28px; font-weight: bold; -webkit-text-stroke: 1px white; text-stroke: 1px white; margin-left: 20px; min-width: 200px;">
+                        CASH $<span id="game-cash-display">1000</span>
                     </div>
                 </div>
                 <div id="holding-controls" class="casino-controls hidden">
                     <div style="color: transparent; font-size: 28px; font-weight: bold; margin-right: 20px; min-width: 200px;">
-                        CASH: $0000
+                        CASH $0000
                     </div>
                     <button onclick="returnToHome()" class="control-btn">MENU</button>
                     <button onclick="console.log('Options')" class="control-btn">OPTIONS</button>
@@ -647,8 +647,8 @@
                     <button onclick="betUp()" class="control-btn">BET UP</button>
                     <button onclick="betMax()" class="control-btn">BET MAX</button>
                     <button onclick="game.draw()" class="control-btn control-btn-deal" id="action-button">DRAW</button>
-                    <div style="color: #CC0000; font-size: 28px; font-weight: bold; margin-left: 20px; min-width: 200px;">
-                        CASH: $<span id="game-cash-display-hold">1000</span>
+                    <div style="color: #CC0000; font-size: 28px; font-weight: bold; -webkit-text-stroke: 1px white; text-stroke: 1px white; margin-left: 20px; min-width: 200px;">
+                        CASH $<span id="game-cash-display-hold">1000</span>
                     </div>
                     <button onclick="game.stand ? game.stand() : null" id="stand-button" class="control-btn hidden">STAND</button>
                     <button onclick="game.fold ? game.fold() : null" id="fold-button" class="control-btn hidden">FOLD</button>
@@ -657,7 +657,7 @@
                 </div>
                 <div id="result-controls" class="casino-controls hidden">
                     <div style="color: transparent; font-size: 28px; font-weight: bold; margin-right: 20px; min-width: 200px;">
-                        CASH: $0000
+                        CASH $0000
                     </div>
                     <button onclick="returnToHome()" class="control-btn">MENU</button>
                     <button onclick="console.log('Options')" class="control-btn">OPTIONS</button>
@@ -669,8 +669,8 @@
                     <button onclick="betUp()" class="control-btn">BET UP</button>
                     <button onclick="betMax()" class="control-btn">BET MAX</button>
                     <button onclick="game.newGame()" class="control-btn control-btn-deal">DRAW</button>
-                    <div style="color: #CC0000; font-size: 28px; font-weight: bold; margin-left: 20px; min-width: 200px;">
-                        CASH: $<span id="game-cash-display-result">1000</span>
+                    <div style="color: #CC0000; font-size: 28px; font-weight: bold; -webkit-text-stroke: 1px white; text-stroke: 1px white; margin-left: 20px; min-width: 200px;">
+                        CASH $<span id="game-cash-display-result">1000</span>
                     </div>
                 </div>
                 <div style="display: none;" id="key-help">
@@ -2219,9 +2219,9 @@
                     heldLabel.textContent = this.held[i] ? 'HELD' : '';
                     heldLabel.style.cssText = `
                         color: #FFFFFF;
-                        font-size: 18px;
+                        font-size: 24px;
                         font-weight: bold;
-                        height: 25px;
+                        height: 32px;
                         margin-bottom: 5px;
                     `;
                     
