@@ -544,8 +544,7 @@
                 <div id="result-controls" class="hidden">
                     <button onclick="game.newGame()">CONTINUE</button>
                 </div>
-                <div style="margin-top: 10px; font-size: 12px; min-height: 40px; color: #AAAAFF;" id="key-help">
-                    Keys: 1-5 (bet/hold) | M (max bet) | SPACE/D (deal/draw) | ENTER (continue)
+                <div style="display: none;" id="key-help">
                 </div>
             </div>
         </div>
@@ -910,7 +909,7 @@
                 const dealerRow = document.createElement('div');
                 dealerRow.style.cssText = 'display: flex; gap: 8px;';
                 for (let i = 0; i < 3; i++) {
-                    dealerRow.appendChild(createCardBack(160, 230));
+                    dealerRow.appendChild(createCardBack(200, 290));
                 }
                 dealerSection.appendChild(dealerRow);
                 
@@ -928,7 +927,7 @@
                 const playerRow = document.createElement('div');
                 playerRow.style.cssText = 'display: flex; gap: 8px;';
                 for (let i = 0; i < 3; i++) {
-                    playerRow.appendChild(createCardBack(160, 230));
+                    playerRow.appendChild(createCardBack(200, 290));
                 }
                 playerSection.appendChild(playerRow);
                 
@@ -1476,8 +1475,8 @@
                 
                 const dealerRow = document.createElement('div');
                 dealerRow.style.cssText = 'display: flex; gap: 8px;';
-                dealerRow.appendChild(createCardBack(160, 230));
-                dealerRow.appendChild(createCardBack(160, 230));
+                dealerRow.appendChild(createCardBack(200, 290));
+                dealerRow.appendChild(createCardBack(200, 290));
                 dealerSection.appendChild(dealerRow);
                 
                 cardsArea.appendChild(dealerSection);
@@ -1493,8 +1492,8 @@
                 
                 const playerRow = document.createElement('div');
                 playerRow.style.cssText = 'display: flex; gap: 8px;';
-                playerRow.appendChild(createCardBack(160, 230));
-                playerRow.appendChild(createCardBack(160, 230));
+                playerRow.appendChild(createCardBack(200, 290));
+                playerRow.appendChild(createCardBack(200, 290));
                 playerSection.appendChild(playerRow);
                 
                 cardsArea.appendChild(playerSection);
@@ -2003,7 +2002,7 @@
                 cardsArea.style.gap = '10px';
                 
                 for (let i = 0; i < 5; i++) {
-                const cardBack = createCardBack(160, 230);
+                const cardBack = createCardBack(200, 290);
                     cardsArea.appendChild(cardBack);
                 }
             }
@@ -2387,7 +2386,7 @@
                             miniHand.style.cssText = 'display: flex; gap: 2px;';
                             
                             for (let cardIdx = 0; cardIdx < 5; cardIdx++) {
-                                miniHand.appendChild(createCardBack(72, 104));
+                                miniHand.appendChild(createCardBack(64, 92));
                             }
                             
                             rowContainer.appendChild(miniHand);
@@ -2475,8 +2474,8 @@
                                 const isRed = card.suit === '♥' || card.suit === '♦';
                                 
                                 cardDiv.style.cssText = `
-                                    width: 72px;
-                                    height: 104px;
+                                    width: 64px;
+                                    height: 92px;
                                     background: ${isWinner ? '#FFFFDD' : '#FFFFFF'};
                                     border: 1px solid ${isWinner ? '#FFFF00' : '#333'};
                                     border-radius: 3px;
@@ -2831,7 +2830,7 @@
             rowContainer.style.cssText = 'display: flex; gap: 8px;';
             
             for (let col = 0; col < 5; col++) {
-                const cardBack = createCardBack(160, 230);
+                const cardBack = createCardBack(200, 290);
                 rowContainer.appendChild(cardBack);
             }
             
