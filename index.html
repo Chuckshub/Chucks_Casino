@@ -608,7 +608,7 @@
                 <div class="pay-table" id="pay-table"></div>
             </div>
 
-            <div class="result" id="result">&nbsp;</div>
+            <div class="result" id="result">Select cards to HOLD</div>
 
             <div class="cards-area" id="cards-area"></div>
 
@@ -2130,7 +2130,7 @@
                     
                     document.getElementById('result-controls').classList.add('hidden');
                     document.getElementById('betting-controls').classList.remove('hidden');
-                    document.getElementById('result').innerHTML = '&nbsp;';
+                    document.getElementById('result').textContent = 'Select cards to HOLD';
                     
                     this.updateDisplay();
                 } else {
