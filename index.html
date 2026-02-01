@@ -1743,7 +1743,14 @@
                     return;
                 }
                 this.bet = amount;
+                this.updateDisplay();
             }
+
+            deal() {
+                if (this.state !== 'betting' || this.bet > this.cash) return;
+                
+                this.cash -= this.bet;
+                globalCash = this.cash;
                 updateHomeCash();
                 
                 this.deck.reset();
