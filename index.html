@@ -2151,7 +2151,7 @@
                     
                     // Add spacer for HELD label (same height as when cards are dealt)
                     const heldSpacer = document.createElement('div');
-                    heldSpacer.style.cssText = 'height: 60px; margin-bottom: 5px;';
+                    heldSpacer.style.cssText = 'height: 42px; margin-bottom: 5px;';
                     heldSpacer.innerHTML = '&nbsp;';
                     
                     const cardBack = createCardBack(280, 400);
@@ -2240,15 +2240,15 @@
                     cardDiv.style.cssText = `
                         width: 280px;
                         height: 400px;
-                        background: ${held ? '#FFFFDD' : '#FFFFFF'};
-                        border: ${held ? '6px solid #FFFF00' : '5px solid #333'};
+                        background: #FFFFFF;
+                        border: 5px solid #333;
                         border-radius: 12px;
                         display: flex;
                         flex-direction: column;
                         justify-content: space-between;
                         padding: 12px 10px;
                         cursor: pointer;
-                        box-shadow: ${held && this.state === 'holding' ? '0 0 20px rgba(255,255,0,0.6)' : '0 4px 8px rgba(0,0,0,0.3)'};
+                        box-shadow: ${'0 4px 8px rgba(0,0,0,0.3)'};
                         transition: all 0.3s ease;
                         overflow: hidden;
                         transform: ${shouldRaise ? 'translateY(-15px)' : 'translateY(0)'};
