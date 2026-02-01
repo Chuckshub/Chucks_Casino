@@ -2117,9 +2117,9 @@
                     heldLabel.textContent = this.held[i] ? 'HELD' : '';
                     heldLabel.style.cssText = `
                         color: #FFFF00;
-                        font-size: 40px;
+                        font-size: 52px;
                         font-weight: bold;
-                        height: 20px;
+                        height: 60px;
                         margin-bottom: 5px;
                     `;
                     
@@ -2167,8 +2167,8 @@
                         color: ${isRed ? '#DD0000' : '#000000'};
                     `;
                     topCorner.innerHTML = `
-                        <div style="font-size: 32px; font-weight: bold;">${card.rank}</div>
-                        <div style="font-size: 20px;">${card.suit}</div>
+                        <div style="font-size: 64px; font-weight: bold;">${card.rank}</div>
+                        <div style="font-size: 48px;">${card.suit}</div>
                     `;
                     
                     // Center suit (or WILD for deuces in Deuces Wild)
@@ -2191,8 +2191,8 @@
                         color: ${isRed ? '#DD0000' : '#000000'};
                     `;
                     bottomCorner.innerHTML = `
-                        <div style="font-size: 32px; font-weight: bold;">${card.rank}</div>
-                        <div style="font-size: 20px;">${card.suit}</div>
+                        <div style="font-size: 64px; font-weight: bold;">${card.rank}</div>
+                        <div style="font-size: 48px;">${card.suit}</div>
                     `;
                     
                     cardDiv.appendChild(topCorner);
@@ -2204,7 +2204,7 @@
                     numberLabel.textContent = i + 1;
                     numberLabel.style.cssText = `
                         color: #AAAAFF;
-                        font-size: 44px;
+                        font-size: 56px;
                         font-weight: bold;
                         margin-top: 8px;
                     `;
