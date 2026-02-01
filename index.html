@@ -2136,15 +2136,15 @@
                     const shouldRaise = held && this.state === 'holding';
                     
                     cardDiv.style.cssText = `
-                        width: 160px;
-                        height: 230px;
+                        width: 280px;
+                        height: 400px;
                         background: ${held ? '#FFFFDD' : '#FFFFFF'};
-                        border: ${held ? '4px solid #FFFF00' : '3px solid #333'};
-                        border-radius: 8px;
+                        border: ${held ? '6px solid #FFFF00' : '5px solid #333'};
+                        border-radius: 12px;
                         display: flex;
                         flex-direction: column;
                         justify-content: space-between;
-                        padding: 8px 6px;
+                        padding: 12px 10px;
                         cursor: pointer;
                         box-shadow: ${held && this.state === 'holding' ? '0 0 20px rgba(255,255,0,0.6)' : '0 4px 8px rgba(0,0,0,0.3)'};
                         transition: all 0.3s ease;
