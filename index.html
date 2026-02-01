@@ -2168,11 +2168,10 @@
                         const payout = this.payTable[hand][i].toString().padStart(5, ' ');
                         if (i === this.bet - 1) {
                             line += `<span class="highlight">${payout}</span>`;
-                        if (i < 4) line += ' |';
                         } else {
-                            line += payout ;
-                        if (i < 4) line += ' |';
+                            line += payout;
                         }
+                        if (i < 4) line += ' |';
                     }
                     payTableHTML += line + '\n';
                 });
