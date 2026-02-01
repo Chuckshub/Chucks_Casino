@@ -232,8 +232,8 @@
             background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FFD700 100%);
             border: 6px solid #000000;
             border-radius: 50%;
-            width: 140px;
-            height: 140px;
+            width: 220px;
+            height: 120px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -245,14 +245,14 @@
         }
 
         .bet-label {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             color: #000000;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
         }
 
         .bet-amount {
-            font-size: 48px;
+            font-size: 52px;
             font-weight: bold;
             color: #CC0000;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
@@ -3248,20 +3248,45 @@
             
             // Number keys for controls
             if (key === '1') {
-                returnToHome();
-                e.preventDefault();
+                if (game.state === 'holding' && game.toggleHold) {
+                    game.toggleHold(0); // Hold card 1
+                    e.preventDefault();
+                } else if (game.state !== 'holding') {
+                    returnToHome();
+                    e.preventDefault();
+                }
             } else if (key === '2') {
-                console.log('Options - not yet implemented');
-                e.preventDefault();
+                if (game.state === 'holding' && game.toggleHold) {
+                    game.toggleHold(1); // Hold card 2
+                    e.preventDefault();
+                } else if (game.state !== 'holding') {
+                    console.log('Options - not yet implemented');
+                    e.preventDefault();
+                }
             } else if (key === '3') {
-                cycleSpeed();
-                e.preventDefault();
-            } else if (key === '4' && game.state === 'betting') {
-                betUp();
-                e.preventDefault();
-            } else if (key === '5' && game.state === 'betting') {
-                betMax();
-                e.preventDefault();
+                if (game.state === 'holding' && game.toggleHold) {
+                    game.toggleHold(2); // Hold card 3
+                    e.preventDefault();
+                } else if (game.state !== 'holding') {
+                    cycleSpeed();
+                    e.preventDefault();
+                }
+            } else if (key === '4') {
+                if (game.state === 'holding' && game.toggleHold) {
+                    game.toggleHold(3); // Hold card 4
+                    e.preventDefault();
+                } else if (game.state === 'betting') {
+                    betUp();
+                    e.preventDefault();
+                }
+            } else if (key === '5') {
+                if (game.state === 'holding' && game.toggleHold) {
+                    game.toggleHold(4); // Hold card 5
+                    e.preventDefault();
+                } else if (game.state === 'betting') {
+                    betMax();
+                    e.preventDefault();
+                }
             }
             
             // SPACE for Deal/Draw (works in all states)
@@ -3271,23 +3296,19 @@
                     // Update button text
                     const btn = document.getElementById('deal-draw-btn');
                     if (btn) btn.textContent = 'DRAW';
+                    updateBetDisplay();
                     e.preventDefault();
                 } else if (game.state === 'holding' && game.draw) {
                     game.draw();
                     e.preventDefault();
-                }
-            }
-            
-            // Enter for Continue
-            if (key === 'enter') {
-                if (game.state === 'result') {
+                } else if (game.state === 'result') {
                     game.newGame();
                     // Reset button text
                     const btn = document.getElementById('deal-draw-btn');
                     if (btn) btn.textContent = 'DEAL';
                     updateBetDisplay();
+                    e.preventDefault();
                 }
-                e.preventDefault();
             }
             
             // Game-specific controls
