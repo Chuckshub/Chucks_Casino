@@ -668,7 +668,7 @@
                     </div>
                     <button onclick="betUp()" class="control-btn">BET UP</button>
                     <button onclick="betMax()" class="control-btn">BET MAX</button>
-                    <button onclick="game.newGame()" class="control-btn control-btn-deal">CONTINUE</button>
+                    <button onclick="game.newGame()" class="control-btn control-btn-deal">DRAW</button>
                     <div style="color: #CC0000; font-size: 28px; font-weight: bold; margin-left: 20px; min-width: 200px;">
                         CASH: $<span id="game-cash-display-result">1000</span>
                     </div>
@@ -2151,7 +2151,7 @@
                     
                     // Add spacer for HELD label (same height as when cards are dealt)
                     const heldSpacer = document.createElement('div');
-                    heldSpacer.style.cssText = 'height: 42px; margin-bottom: 5px;';
+                    heldSpacer.style.cssText = 'height: 36px; margin-bottom: 5px;';
                     heldSpacer.innerHTML = '&nbsp;';
                     
                     const cardBack = createCardBack(280, 400);
