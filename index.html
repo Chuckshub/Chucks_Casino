@@ -233,7 +233,7 @@
             border: 6px solid #000000;
             border-radius: 50%;
             width: 220px;
-            height: 140px;
+            height: 130px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -241,7 +241,7 @@
             box-shadow: 
                 inset 0 0 20px rgba(255,255,255,0.5),
                 0 6px 15px rgba(0,0,0,0.5);
-            margin: 0 15px;
+            margin: -10px 15px 0 15px;
         }
 
         .bet-label {
@@ -625,11 +625,9 @@
                     </div>
                     <button onclick="betUp()" class="control-btn">BET UP</button>
                     <button onclick="betMax()" class="control-btn">BET MAX</button>
-                    <div style="display: flex; flex-direction: column; align-items: center;">
-                        <div style="color: #CC0000; font-size: 24px; font-weight: bold; margin-bottom: 8px;">
-                            CASH: $<span id="game-cash-display">1000</span>
-                        </div>
-                        <button onclick="game.deal()" class="control-btn control-btn-deal" id="deal-draw-btn">DEAL</button>
+                    <button onclick="game.deal()" class="control-btn control-btn-deal" id="deal-draw-btn">DEAL</button>
+                    <div style="color: #CC0000; font-size: 28px; font-weight: bold; margin-left: 20px;">
+                        CASH: $<span id="game-cash-display">1000</span>
                     </div>
                 </div>
                 <div id="holding-controls" class="casino-controls hidden">
@@ -642,11 +640,9 @@
                     </div>
                     <button onclick="betUp()" class="control-btn">BET UP</button>
                     <button onclick="betMax()" class="control-btn">BET MAX</button>
-                    <div style="display: flex; flex-direction: column; align-items: center;">
-                        <div style="color: #CC0000; font-size: 24px; font-weight: bold; margin-bottom: 8px;">
-                            CASH: $<span id="game-cash-display-hold">1000</span>
-                        </div>
-                        <button onclick="game.draw()" class="control-btn control-btn-deal" id="action-button">DRAW</button>
+                    <button onclick="game.draw()" class="control-btn control-btn-deal" id="action-button">DRAW</button>
+                    <div style="color: #CC0000; font-size: 28px; font-weight: bold; margin-left: 20px;">
+                        CASH: $<span id="game-cash-display-hold">1000</span>
                     </div>
                     <button onclick="game.stand ? game.stand() : null" id="stand-button" class="control-btn hidden">STAND</button>
                     <button onclick="game.fold ? game.fold() : null" id="fold-button" class="control-btn hidden">FOLD</button>
@@ -663,11 +659,9 @@
                     </div>
                     <button onclick="betUp()" class="control-btn">BET UP</button>
                     <button onclick="betMax()" class="control-btn">BET MAX</button>
-                    <div style="display: flex; flex-direction: column; align-items: center;">
-                        <div style="color: #CC0000; font-size: 24px; font-weight: bold; margin-bottom: 8px;">
-                            CASH: $<span id="game-cash-display-result">1000</span>
-                        </div>
-                        <button onclick="game.newGame()" class="control-btn control-btn-deal">CONTINUE</button>
+                    <button onclick="game.newGame()" class="control-btn control-btn-deal">CONTINUE</button>
+                    <div style="color: #CC0000; font-size: 28px; font-weight: bold; margin-left: 20px;">
+                        CASH: $<span id="game-cash-display-result">1000</span>
                     </div>
                 </div>
                 <div style="display: none;" id="key-help">
