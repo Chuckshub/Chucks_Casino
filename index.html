@@ -625,7 +625,12 @@
                     </div>
                     <button onclick="betUp()" class="control-btn">BET UP</button>
                     <button onclick="betMax()" class="control-btn">BET MAX</button>
-                    <button onclick="game.deal()" class="control-btn control-btn-deal" id="deal-draw-btn">DEAL</button>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div style="color: #CC0000; font-size: 24px; font-weight: bold; margin-bottom: 8px;">
+                            CASH: $<span id="game-cash-display">1000</span>
+                        </div>
+                        <button onclick="game.deal()" class="control-btn control-btn-deal" id="deal-draw-btn">DEAL</button>
+                    </div>
                 </div>
                 <div id="holding-controls" class="casino-controls hidden">
                     <button onclick="returnToHome()" class="control-btn">MENU</button>
@@ -635,7 +640,14 @@
                         <div class="bet-label">BET</div>
                         <div class="bet-amount" id="bet-amount-hold">1</div>
                     </div>
-                    <button onclick="game.draw()" class="control-btn control-btn-deal" id="action-button">DRAW</button>
+                    <button onclick="betUp()" class="control-btn">BET UP</button>
+                    <button onclick="betMax()" class="control-btn">BET MAX</button>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div style="color: #CC0000; font-size: 24px; font-weight: bold; margin-bottom: 8px;">
+                            CASH: $<span id="game-cash-display-hold">1000</span>
+                        </div>
+                        <button onclick="game.draw()" class="control-btn control-btn-deal" id="action-button">DRAW</button>
+                    </div>
                     <button onclick="game.stand ? game.stand() : null" id="stand-button" class="control-btn hidden">STAND</button>
                     <button onclick="game.fold ? game.fold() : null" id="fold-button" class="control-btn hidden">FOLD</button>
                     <button onclick="game.doubleDown ? game.doubleDown() : null" id="double-button" class="control-btn hidden">DOUBLE</button>
@@ -649,7 +661,14 @@
                         <div class="bet-label">BET</div>
                         <div class="bet-amount" id="bet-amount-result">1</div>
                     </div>
-                    <button onclick="game.newGame()" class="control-btn control-btn-deal">CONTINUE</button>
+                    <button onclick="betUp()" class="control-btn">BET UP</button>
+                    <button onclick="betMax()" class="control-btn">BET MAX</button>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div style="color: #CC0000; font-size: 24px; font-weight: bold; margin-bottom: 8px;">
+                            CASH: $<span id="game-cash-display-result">1000</span>
+                        </div>
+                        <button onclick="game.newGame()" class="control-btn control-btn-deal">CONTINUE</button>
+                    </div>
                 </div>
                 <div style="display: none;" id="key-help">
                 </div>
@@ -1068,8 +1087,14 @@
                 
                 document.getElementById('pay-table').innerHTML = payTableHTML;
 
-                document.getElementById('info-bar').innerHTML = 
-                    `BET: $${this.bet}                    CASH: $${this.cash}`;
+                document.getElementById('info-bar').innerHTML = '';
+                
+                // Update cash displays
+                const cashDisplays = ['game-cash-display', 'game-cash-display-hold', 'game-cash-display-result'];
+                cashDisplays.forEach(id => {
+                    const elem = document.getElementById(id);
+                    if (elem) elem.textContent = this.cash;
+                });
             }
 
             renderCards() {
@@ -1617,8 +1642,14 @@
                 document.getElementById('pay-table').innerHTML = payTableHTML;
 
                 // Info bar
-                document.getElementById('info-bar').innerHTML = 
-                    `BET: $${this.bet}                    CASH: $${this.cash}`;
+                document.getElementById('info-bar').innerHTML = '';
+                
+                // Update cash displays
+                const cashDisplays = ['game-cash-display', 'game-cash-display-hold', 'game-cash-display-result'];
+                cashDisplays.forEach(id => {
+                    const elem = document.getElementById(id);
+                    if (elem) elem.textContent = this.cash;
+                });
             }
 
             renderCards() {
@@ -2148,8 +2179,14 @@
                 document.getElementById('pay-table').innerHTML = payTableHTML;
 
                 // Info bar
-                document.getElementById('info-bar').innerHTML = 
-                    `BET: $${this.bet}                    CASH: $${this.cash}`;
+                document.getElementById('info-bar').innerHTML = '';
+                
+                // Update cash displays
+                const cashDisplays = ['game-cash-display', 'game-cash-display-hold', 'game-cash-display-result'];
+                cashDisplays.forEach(id => {
+                    const elem = document.getElementById(id);
+                    if (elem) elem.textContent = this.cash;
+                });
             }
 
             renderCards() {
@@ -2259,7 +2296,6 @@
                     
                     container.appendChild(heldLabel);
                     container.appendChild(cardDiv);
-                    container.appendChild(numberLabel);
                     cardsArea.appendChild(container);
                 });
                 
@@ -2533,8 +2569,14 @@
                 payTable.innerHTML = '';
                 payTable.style.minHeight = '0';
                 payTable.style.margin = '0';
-                document.getElementById('info-bar').innerHTML = 
-                    `BET: $${this.bet} x ${numHands} = $${this.bet * numHands}     HANDS: ${numHands}     CASH: $${this.cash}`;
+                document.getElementById('info-bar').innerHTML = '';
+                
+                // Update cash displays
+                const cashDisplays = ['game-cash-display', 'game-cash-display-hold', 'game-cash-display-result'];
+                cashDisplays.forEach(id => {
+                    const elem = document.getElementById(id);
+                    if (elem) elem.textContent = this.cash;
+                });
             }
 
             renderCards() {
@@ -2952,8 +2994,14 @@
         }
         
         document.getElementById('pay-table').innerHTML = payTableHTML;
-        document.getElementById('info-bar').innerHTML = 
-            `BET: $${this.bet} x 3 = $${this.bet * 3}                    CASH: $${this.cash}`;
+        document.getElementById('info-bar').innerHTML = '';
+                
+                // Update cash displays
+                const cashDisplays = ['game-cash-display', 'game-cash-display-hold', 'game-cash-display-result'];
+                cashDisplays.forEach(id => {
+                    const elem = document.getElementById(id);
+                    if (elem) elem.textContent = this.cash;
+                });
     }
 
     renderCards() {
