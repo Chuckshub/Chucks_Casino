@@ -187,6 +187,78 @@
             position: relative;
         }
 
+        .casino-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: nowrap;
+        }
+
+        .control-btn {
+            background: linear-gradient(180deg, #FFD700 0%, #FFA500 100%);
+            color: #000000;
+            border: 4px solid #000000;
+            padding: 18px 35px;
+            font-size: 22px;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            border-radius: 8px;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
+            box-shadow: 
+                0 4px 0 #8B4513,
+                0 6px 10px rgba(0,0,0,0.4);
+            transition: all 0.1s;
+            min-width: 160px;
+        }
+
+        .control-btn:active {
+            transform: translateY(3px);
+            box-shadow: 
+                0 1px 0 #8B4513,
+                0 3px 5px rgba(0,0,0,0.4);
+        }
+
+        .control-btn-deal {
+            background: linear-gradient(180deg, #FF6B6B 0%, #CC0000 100%);
+            color: #FFFF00;
+            font-size: 28px;
+            padding: 20px 50px;
+            min-width: 200px;
+        }
+
+        .bet-display {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FFD700 100%);
+            border: 6px solid #000000;
+            border-radius: 50%;
+            width: 140px;
+            height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 
+                inset 0 0 20px rgba(255,255,255,0.5),
+                0 6px 15px rgba(0,0,0,0.5);
+            margin: 0 15px;
+        }
+
+        .bet-label {
+            font-size: 18px;
+            font-weight: bold;
+            color: #000000;
+            margin-bottom: 5px;
+        }
+
+        .bet-amount {
+            font-size: 48px;
+            font-weight: bold;
+            color: #CC0000;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-family: Arial, sans-serif;
+        }
+
         }
 
         button {
@@ -527,7 +599,6 @@
         <!-- GAME SCREEN -->
         <div id="game-screen">
             <div style="margin-bottom: 15px;">
-                <button class="back-button" onclick="returnToHome()">◄ BACK TO MENU</button>
             </div>
 
             <div class="title" id="game-title">V I D E O   P O K E R</div>
@@ -544,23 +615,41 @@
             <pre class="info-bar" id="info-bar"></pre>
 
             <div class="controls">
-                <div id="betting-controls">
-                    <button onclick="game.setBet(1)">BET 1</button>
-                    <button onclick="game.setBet(2)">BET 2</button>
-                    <button onclick="game.setBet(3)">BET 3</button>
-                    <button onclick="game.setBet(4)">BET 4</button>
-                    <button onclick="game.setBet(5)">BET 5</button>
-                    <button onclick="game.deal()">DEAL</button>
+                <div id="betting-controls" class="casino-controls">
+                    <button onclick="returnToHome()" class="control-btn">MENU</button>
+                    <button onclick="console.log('Options')" class="control-btn">OPTIONS</button>
+                    <button onclick="cycleSpeed()" class="control-btn">SPEED</button>
+                    <div class="bet-display">
+                        <div class="bet-label">BET</div>
+                        <div class="bet-amount" id="bet-amount">1</div>
+                    </div>
+                    <button onclick="betUp()" class="control-btn">BET UP</button>
+                    <button onclick="betMax()" class="control-btn">BET MAX</button>
+                    <button onclick="game.deal()" class="control-btn control-btn-deal" id="deal-draw-btn">DEAL</button>
                 </div>
-                <div id="holding-controls" class="hidden">
-                    <button onclick="game.draw()" id="action-button">DRAW</button>
-                    <button onclick="game.stand ? game.stand() : null" id="stand-button" class="hidden">STAND</button>
-                    <button onclick="game.fold ? game.fold() : null" id="fold-button" class="hidden">FOLD</button>
-                    <button onclick="game.doubleDown ? game.doubleDown() : null" id="double-button" class="hidden">DOUBLE</button>
-                    <button onclick="game.split ? game.split() : null" id="split-button" class="hidden">SPLIT</button>
+                <div id="holding-controls" class="casino-controls hidden">
+                    <button onclick="returnToHome()" class="control-btn">MENU</button>
+                    <button onclick="console.log('Options')" class="control-btn">OPTIONS</button>
+                    <button onclick="cycleSpeed()" class="control-btn">SPEED</button>
+                    <div class="bet-display">
+                        <div class="bet-label">BET</div>
+                        <div class="bet-amount" id="bet-amount-hold">1</div>
+                    </div>
+                    <button onclick="game.draw()" class="control-btn control-btn-deal" id="action-button">DRAW</button>
+                    <button onclick="game.stand ? game.stand() : null" id="stand-button" class="control-btn hidden">STAND</button>
+                    <button onclick="game.fold ? game.fold() : null" id="fold-button" class="control-btn hidden">FOLD</button>
+                    <button onclick="game.doubleDown ? game.doubleDown() : null" id="double-button" class="control-btn hidden">DOUBLE</button>
+                    <button onclick="game.split ? game.split() : null" id="split-button" class="control-btn hidden">SPLIT</button>
                 </div>
-                <div id="result-controls" class="hidden">
-                    <button onclick="game.newGame()">CONTINUE</button>
+                <div id="result-controls" class="casino-controls hidden">
+                    <button onclick="returnToHome()" class="control-btn">MENU</button>
+                    <button onclick="console.log('Options')" class="control-btn">OPTIONS</button>
+                    <button onclick="cycleSpeed()" class="control-btn">SPEED</button>
+                    <div class="bet-display">
+                        <div class="bet-label">BET</div>
+                        <div class="bet-amount" id="bet-amount-result">1</div>
+                    </div>
+                    <button onclick="game.newGame()" class="control-btn control-btn-deal">CONTINUE</button>
                 </div>
                 <div style="display: none;" id="key-help">
                 </div>
@@ -1746,6 +1835,7 @@
                 }
                 this.bet = amount;
                 this.updateDisplay();
+                updateBetDisplay();
             }
 
             deal() {
@@ -3026,6 +3116,35 @@
         }
 
         let game = null;
+        let cardSpeed = 1; // 1 = normal, 2 = fast, 3 = instant
+
+        function updateBetDisplay() {
+            if (!game) return;
+            document.getElementById('bet-amount').textContent = game.bet || 1;
+            const holdDisplay = document.getElementById('bet-amount-hold');
+            if (holdDisplay) holdDisplay.textContent = game.bet || 1;
+            const resultDisplay = document.getElementById('bet-amount-result');
+            if (resultDisplay) resultDisplay.textContent = game.bet || 1;
+        }
+
+        function betUp() {
+            if (!game || game.state !== 'betting') return;
+            const newBet = game.bet >= 5 ? 1 : game.bet + 1;
+            game.setBet(newBet);
+            updateBetDisplay();
+        }
+
+        function betMax() {
+            if (!game || game.state !== 'betting') return;
+            game.setBet(Math.min(5, game.cash));
+            updateBetDisplay();
+        }
+
+        function cycleSpeed() {
+            cardSpeed = cardSpeed >= 3 ? 1 : cardSpeed + 1;
+            const speeds = ['NORMAL', 'FAST', 'INSTANT'];
+            console.log('Speed:', speeds[cardSpeed - 1]);
+        }
 
         function startGame(gameType) {
             currentGameType = gameType;
@@ -3084,6 +3203,7 @@
             }
             
             game.updateDisplay();
+            updateBetDisplay();
             
             // Show card backs for video poker games on start
             if (game.renderCardBacks) {
@@ -3126,21 +3246,31 @@
             
             if (!game) return;
             
-            // Number keys 1-5 for betting or holding (video poker only)
-            if (key >= '1' && key <= '5') {
-                const num = parseInt(key);
-                if (game.state === 'betting') {
-                    game.setBet(num);
-                } else if (game.state === 'holding' && game.toggleHold) {
-                    game.toggleHold(num - 1);
-                }
+            // Number keys for controls
+            if (key === '1') {
+                returnToHome();
+                e.preventDefault();
+            } else if (key === '2') {
+                console.log('Options - not yet implemented');
+                e.preventDefault();
+            } else if (key === '3') {
+                cycleSpeed();
+                e.preventDefault();
+            } else if (key === '4' && game.state === 'betting') {
+                betUp();
+                e.preventDefault();
+            } else if (key === '5' && game.state === 'betting') {
+                betMax();
                 e.preventDefault();
             }
             
-            // Spacebar for Deal and Draw
+            // SPACE for Deal/Draw (works in all states)
             if (key === ' ') {
                 if (game.state === 'betting') {
                     game.deal();
+                    // Update button text
+                    const btn = document.getElementById('deal-draw-btn');
+                    if (btn) btn.textContent = 'DRAW';
                     e.preventDefault();
                 } else if (game.state === 'holding' && game.draw) {
                     game.draw();
@@ -3152,6 +3282,10 @@
             if (key === 'enter') {
                 if (game.state === 'result') {
                     game.newGame();
+                    // Reset button text
+                    const btn = document.getElementById('deal-draw-btn');
+                    if (btn) btn.textContent = 'DEAL';
+                    updateBetDisplay();
                 }
                 e.preventDefault();
             }
