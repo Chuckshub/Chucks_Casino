@@ -724,12 +724,6 @@
                 }
                 this.bet = amount;
                 
-                // Show big bet indicator
-                    indicator.style.display = 'block';
-                    setTimeout(() => {
-                        indicator.style.display = 'none';
-                    }, 800);
-                }
                 this.updateDisplay();
             }
 
@@ -1153,12 +1147,6 @@
                 }
                 this.bet = amount;
                 
-                // Show big bet indicator
-                    indicator.style.display = 'block';
-                    setTimeout(() => {
-                        indicator.style.display = 'none';
-                    }, 800);
-                }
                 this.originalBet = amount; // Update originalBet too
                 this.updateDisplay();
             }
@@ -1755,21 +1743,7 @@
                     return;
                 }
                 this.bet = amount;
-                
-                // Show big bet indicator
-                    indicator.style.display = 'block';
-                    setTimeout(() => {
-                        indicator.style.display = 'none';
-                    }, 800);
-                }
-                this.updateDisplay();
             }
-
-            deal() {
-                if (this.state !== 'betting' || this.bet > this.cash) return;
-                
-                this.cash -= this.bet;
-                globalCash = this.cash;
                 updateHomeCash();
                 
                 this.deck.reset();
@@ -2224,12 +2198,6 @@
                 }
                 this.bet = amount;
                 
-                // Show big bet indicator
-                    indicator.style.display = 'block';
-                    setTimeout(() => {
-                        indicator.style.display = 'none';
-                    }, 800);
-                }
                 this.updateDisplay();
                 this.renderCardBacks();
             }
@@ -2686,12 +2654,6 @@
         }
         this.bet = amount;
                 
-                // Show big bet indicator
-                    indicator.style.display = 'block';
-                    setTimeout(() => {
-                        indicator.style.display = 'none';
-                    }, 800);
-                }
         this.updateDisplay();
     }
 
