@@ -112,11 +112,7 @@
         }
 
         .game-variant {
-            text-align: center;
-            color: #AAAAFF;
-            font-size: 20px;
-            margin-bottom: 8px;
-            min-height: 24px;
+            display: none;
         }
 
         .pay-table {
@@ -599,7 +595,7 @@
             </div>
 
             <div class="title" id="game-title">V I D E O   P O K E R</div>
-            <div class="game-variant" id="game-variant"></div>
+            <div class="game-variant" style="display: none;" id="game-variant"></div>
             
             <div style="text-align: center;">
                 <div class="pay-table" id="pay-table"></div>
@@ -613,8 +609,8 @@
 
             <div class="controls">
                 <div id="betting-controls" class="casino-controls">
-                    <div style="color: transparent; font-size: 28px; font-weight: bold; margin-right: 20px; min-width: 200px;">
-                        CASH $0000
+                    <div style="color: #CC0000; font-size: 28px; font-weight: bold; -webkit-text-stroke: 1px white; text-stroke: 1px white; margin-right: 20px; min-width: 200px;">
+                        <span id="game-variant-display">JACKS OR BETTER</span>
                     </div>
                     <button onclick="returnToHome()" class="control-btn">MENU</button>
                     <button onclick="console.log('Options')" class="control-btn">OPTIONS</button>
@@ -631,8 +627,8 @@
                     </div>
                 </div>
                 <div id="holding-controls" class="casino-controls hidden">
-                    <div style="color: transparent; font-size: 28px; font-weight: bold; margin-right: 20px; min-width: 200px;">
-                        CASH $0000
+                    <div style="color: #CC0000; font-size: 28px; font-weight: bold; -webkit-text-stroke: 1px white; text-stroke: 1px white; margin-right: 20px; min-width: 200px;">
+                        <span id="game-variant-display-hold">JACKS OR BETTER</span>
                     </div>
                     <button onclick="returnToHome()" class="control-btn">MENU</button>
                     <button onclick="console.log('Options')" class="control-btn">OPTIONS</button>
@@ -653,8 +649,8 @@
                     <button onclick="game.split ? game.split() : null" id="split-button" class="control-btn hidden">SPLIT</button>
                 </div>
                 <div id="result-controls" class="casino-controls hidden">
-                    <div style="color: transparent; font-size: 28px; font-weight: bold; margin-right: 20px; min-width: 200px;">
-                        CASH $0000
+                    <div style="color: #CC0000; font-size: 28px; font-weight: bold; -webkit-text-stroke: 1px white; text-stroke: 1px white; margin-right: 20px; min-width: 200px;">
+                        <span id="game-variant-display-result">JACKS OR BETTER</span>
                     </div>
                     <button onclick="returnToHome()" class="control-btn">MENU</button>
                     <button onclick="console.log('Options')" class="control-btn">OPTIONS</button>
@@ -3176,6 +3172,21 @@
             if (holdDisplay) holdDisplay.textContent = '$' + (game.bet || 1);
             const resultDisplay = document.getElementById('bet-amount-result');
             if (resultDisplay) resultDisplay.textContent = '$' + (game.bet || 1);
+            
+            // Update game variant displays
+            const gameNames = {
+                'jacks': 'JACKS OR BETTER',
+                'deuces': 'DEUCES WILD',
+                'multihand': 'MULTI-HAND',
+                'spinpoker': 'SPIN POKER',
+                'blackjack': 'BLACKJACK',
+                'threecard': 'THREE CARD'
+            };
+            const variantName = gameNames[currentGameType] || 'VIDEO POKER';
+            ['game-variant-display', 'game-variant-display-hold', 'game-variant-display-result'].forEach(id => {
+                const elem = document.getElementById(id);
+                if (elem) elem.textContent = variantName;
+            });
         }
 
         function betUp() {
@@ -3222,31 +3233,67 @@
             
             if (gameType === 'jacks') {
                 document.getElementById('game-variant').textContent = '[ JACKS OR BETTER ]';
+                const variantText = 'JACKS OR BETTER';
+                document.getElementById('game-variant-left').textContent = variantText;
+                const holdVariant = document.getElementById('game-variant-left-hold');
+                if (holdVariant) holdVariant.textContent = variantText;
+                const resultVariant = document.getElementById('game-variant-left-result');
+                if (resultVariant) resultVariant.textContent = variantText;
                 document.getElementById('action-button').textContent = 'DRAW';
                 document.getElementById('key-help').textContent = 'Keys: 1-5 (bet/hold) | M (max bet) | SPACE/D (deal/draw) | ENTER (continue)';
                 game = new VideoPokerGame(gameType);
             } else if (gameType === 'deuces') {
                 document.getElementById('game-variant').textContent = '[ DEUCES WILD ]';
+                const variantText = 'DEUCES WILD';
+                document.getElementById('game-variant-left').textContent = variantText;
+                const holdVariant = document.getElementById('game-variant-left-hold');
+                if (holdVariant) holdVariant.textContent = variantText;
+                const resultVariant = document.getElementById('game-variant-left-result');
+                if (resultVariant) resultVariant.textContent = variantText;
                 document.getElementById('action-button').textContent = 'DRAW';
                 document.getElementById('key-help').textContent = 'Keys: 1-5 (bet/hold) | M (max bet) | SPACE/D (deal/draw) | ENTER (continue)';
                 game = new VideoPokerGame(gameType);
             } else if (gameType === 'multihand') {
                 document.getElementById('game-variant').textContent = '[ MULTI-HAND POKER - DYNAMIC ]';
+                const variantText = 'MULTI-HAND POKER - DYNAMIC';
+                document.getElementById('game-variant-left').textContent = variantText;
+                const holdVariant = document.getElementById('game-variant-left-hold');
+                if (holdVariant) holdVariant.textContent = variantText;
+                const resultVariant = document.getElementById('game-variant-left-result');
+                if (resultVariant) resultVariant.textContent = variantText;
                 document.getElementById('action-button').textContent = 'DRAW';
                 document.getElementById('key-help').textContent = 'Keys: 1-5 (bet/hold) | M (max bet) | SPACE/D (deal/draw) | ENTER (continue)';
                 game = new MultiHandPokerGame();
             } else if (gameType === 'spinpoker') {
                 document.getElementById('game-variant').textContent = '[ SPIN POKER - 3 LINES ]';
+                const variantText = 'SPIN POKER - 3 LINES';
+                document.getElementById('game-variant-left').textContent = variantText;
+                const holdVariant = document.getElementById('game-variant-left-hold');
+                if (holdVariant) holdVariant.textContent = variantText;
+                const resultVariant = document.getElementById('game-variant-left-result');
+                if (resultVariant) resultVariant.textContent = variantText;
                 document.getElementById('action-button').textContent = 'DRAW';
                 document.getElementById('key-help').textContent = 'Keys: 1-5 (bet/hold) | M (max bet) | SPACE/D (deal/draw) | ENTER (continue)';
                 game = new SpinPokerGame();
             } else if (gameType === 'blackjack') {
                 document.getElementById('game-variant').textContent = '[ BLACKJACK - 21 ]';
+                const variantText = 'BLACKJACK - 21';
+                document.getElementById('game-variant-left').textContent = variantText;
+                const holdVariant = document.getElementById('game-variant-left-hold');
+                if (holdVariant) holdVariant.textContent = variantText;
+                const resultVariant = document.getElementById('game-variant-left-result');
+                if (resultVariant) resultVariant.textContent = variantText;
                 document.getElementById('action-button').textContent = 'HIT';
                 document.getElementById('key-help').textContent = 'Keys: H (hit) | S (stand) | D (double) | X (split) | SPACE (deal) | ENTER (continue)';
                 game = new BlackjackGame();
             } else if (gameType === 'threecard') {
                 document.getElementById('game-variant').textContent = '[ THREE CARD POKER ]';
+                const variantText = 'THREE CARD POKER';
+                document.getElementById('game-variant-left').textContent = variantText;
+                const holdVariant = document.getElementById('game-variant-left-hold');
+                if (holdVariant) holdVariant.textContent = variantText;
+                const resultVariant = document.getElementById('game-variant-left-result');
+                if (resultVariant) resultVariant.textContent = variantText;
                 document.getElementById('action-button').textContent = 'PLAY';
                 document.getElementById('fold-button').classList.remove('hidden');
                 document.getElementById('key-help').textContent = 'Keys: P (play) | F (fold) | SPACE (deal) | ENTER (continue)';
