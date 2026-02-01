@@ -2112,8 +2112,15 @@
                 cardsArea.style.gap = '10px';
                 
                 for (let i = 0; i < 5; i++) {
-                const cardBack = createCardBack(280, 400);
-                    cardsArea.appendChild(cardBack);
+                    const container = document.createElement('div');
+                    container.style.cssText = 'display: flex; flex-direction: column; align-items: center;';
+                    
+                    const cardBack = createCardBack(280, 400);
+                    
+                    
+                    container.appendChild(cardBack);
+                    
+                    cardsArea.appendChild(container);
                 }
             }
 
@@ -2249,15 +2256,6 @@
                     cardDiv.appendChild(centerSuit);
                     cardDiv.appendChild(bottomCorner);
                     
-                    // Card number below
-                    const numberLabel = document.createElement('div');
-                    numberLabel.textContent = i + 1;
-                    numberLabel.style.cssText = `
-                        color: #AAAAFF;
-                        font-size: 56px;
-                        font-weight: bold;
-                        margin-top: 8px;
-                    `;
                     
                     container.appendChild(heldLabel);
                     container.appendChild(cardDiv);
