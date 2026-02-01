@@ -171,6 +171,29 @@
             margin: 10px 0;
             text-align: center;
             min-height: 70px;
+            position: relative;
+        }
+
+        .bet-indicator {
+            position: absolute;
+            top: -450px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #CC0000 0%, #FF3333 50%, #CC0000 100%);
+            border: 6px solid #FFFF00;
+            border-radius: 20px;
+            padding: 40px 80px;
+            font-size: 72px;
+            font-weight: bold;
+            color: #FFFF00;
+            text-shadow: 
+                0 0 10px rgba(255, 255, 0, 1),
+                0 0 20px rgba(255, 255, 0, 0.8),
+                4px 4px 8px rgba(0,0,0,1);
+            letter-spacing: 6px;
+            box-shadow: 0 0 40px rgba(255, 255, 0, 0.6);
+            z-index: 100;
+            pointer-events: none;
         }
 
         button {
@@ -526,6 +549,7 @@
             <pre class="info-bar" id="info-bar"></pre>
 
             <div class="controls">
+                <div class="bet-indicator" id="bet-indicator" style="display: none;">PLAY 5 CREDITS</div>
                 <div id="betting-controls">
                     <button onclick="game.setBet(1)">BET 1</button>
                     <button onclick="game.setBet(2)">BET 2</button>
@@ -707,6 +731,18 @@
                     return;
                 }
                 this.bet = amount;
+                
+                // Show big bet indicator
+                const indicator = document.getElementById('bet-indicator');
+                if (indicator) {
+                    const numHands = this.getNumHands ? this.getNumHands() : 1;
+                    const totalBet = amount * numHands;
+                    indicator.textContent = `PLAY ${totalBet} CREDIT${totalBet > 1 ? 'S' : ''}`;
+                    indicator.style.display = 'block';
+                    setTimeout(() => {
+                        indicator.style.display = 'none';
+                    }, 800);
+                }
                 this.updateDisplay();
             }
 
@@ -1129,6 +1165,18 @@
                     return;
                 }
                 this.bet = amount;
+                
+                // Show big bet indicator
+                const indicator = document.getElementById('bet-indicator');
+                if (indicator) {
+                    const numHands = this.getNumHands ? this.getNumHands() : 1;
+                    const totalBet = amount * numHands;
+                    indicator.textContent = `PLAY ${totalBet} CREDIT${totalBet > 1 ? 'S' : ''}`;
+                    indicator.style.display = 'block';
+                    setTimeout(() => {
+                        indicator.style.display = 'none';
+                    }, 800);
+                }
                 this.originalBet = amount; // Update originalBet too
                 this.updateDisplay();
             }
@@ -1725,6 +1773,18 @@
                     return;
                 }
                 this.bet = amount;
+                
+                // Show big bet indicator
+                const indicator = document.getElementById('bet-indicator');
+                if (indicator) {
+                    const numHands = this.getNumHands ? this.getNumHands() : 1;
+                    const totalBet = amount * numHands;
+                    indicator.textContent = `PLAY ${totalBet} CREDIT${totalBet > 1 ? 'S' : ''}`;
+                    indicator.style.display = 'block';
+                    setTimeout(() => {
+                        indicator.style.display = 'none';
+                    }, 800);
+                }
                 this.updateDisplay();
             }
 
@@ -2057,7 +2117,7 @@
                     heldLabel.textContent = this.held[i] ? 'HELD' : '';
                     heldLabel.style.cssText = `
                         color: #FFFF00;
-                        font-size: 28px;
+                        font-size: 40px;
                         font-weight: bold;
                         height: 20px;
                         margin-bottom: 5px;
@@ -2144,7 +2204,7 @@
                     numberLabel.textContent = i + 1;
                     numberLabel.style.cssText = `
                         color: #AAAAFF;
-                        font-size: 32px;
+                        font-size: 44px;
                         font-weight: bold;
                         margin-top: 8px;
                     `;
@@ -2186,6 +2246,18 @@
                     return;
                 }
                 this.bet = amount;
+                
+                // Show big bet indicator
+                const indicator = document.getElementById('bet-indicator');
+                if (indicator) {
+                    const numHands = this.getNumHands ? this.getNumHands() : 1;
+                    const totalBet = amount * numHands;
+                    indicator.textContent = `PLAY ${totalBet} CREDIT${totalBet > 1 ? 'S' : ''}`;
+                    indicator.style.display = 'block';
+                    setTimeout(() => {
+                        indicator.style.display = 'none';
+                    }, 800);
+                }
                 this.updateDisplay();
                 this.renderCardBacks();
             }
@@ -2230,19 +2302,21 @@
                 
                 this.state = 'result';
                 
-                // Draw new cards for each hand independently
+                // Calculate how many cards we need
+                const numHeld = this.held.filter(h => h).length;
+                const cardsNeededPerHand = 5 - numHeld;
+                const totalCardsNeeded = cardsNeededPerHand * this.hands.length;
+                
+                // Deal all cards at once
+                const newCards = this.deck.deal(totalCardsNeeded);
+                let cardIndex = 0;
+                
+                // Distribute to hands
                 for (let handIdx = 0; handIdx < this.hands.length; handIdx++) {
-                    for (let cardIdx = 0; cardIdx < 5; cardIdx++) {
-                        if (!this.held[cardIdx]) {
-                            const newCard = this.deck.deal(1)[0];
-                            if (newCard) {
-                                this.hands[handIdx][cardIdx] = newCard;
-                            } else {
-                                console.error('Deck ran out of cards!');
-                                // Reset deck and continue
-                                this.deck.reset();
-                                this.hands[handIdx][cardIdx] = this.deck.deal(1)[0];
-                            }
+                    for (let pos = 0; pos < 5; pos++) {
+                        if (!this.held[pos]) {
+                            this.hands[handIdx][pos] = newCards[cardIndex % newCards.length];
+                            cardIndex++;
                         }
                     }
                 }
@@ -2409,7 +2483,7 @@
                     heldLabel.innerHTML = '&nbsp;';
                     
                     wrapper.appendChild(heldLabel);
-                    wrapper.appendChild(createCardBack(180, 260));
+                    wrapper.appendChild(createCardBack(170, 245));
                     baseHandContainer.appendChild(wrapper);
                 }
                 
@@ -2574,8 +2648,8 @@
                     const held = this.held[cardIdx];
                     
                     cardDiv.style.cssText = `
-                        width: 180px;
-                        height: 260px;
+                        width: 170px;
+                        height: 245px;
                         background: ${held ? '#FFFFDD' : '#FFFFFF'};
                         border: ${held ? '5px solid #FFFF00' : '4px solid #333'};
                         border-radius: 10px;
@@ -2639,6 +2713,18 @@
             return;
         }
         this.bet = amount;
+                
+                // Show big bet indicator
+                const indicator = document.getElementById('bet-indicator');
+                if (indicator) {
+                    const numHands = this.getNumHands ? this.getNumHands() : 1;
+                    const totalBet = amount * numHands;
+                    indicator.textContent = `PLAY ${totalBet} CREDIT${totalBet > 1 ? 'S' : ''}`;
+                    indicator.style.display = 'block';
+                    setTimeout(() => {
+                        indicator.style.display = 'none';
+                    }, 800);
+                }
         this.updateDisplay();
     }
 
