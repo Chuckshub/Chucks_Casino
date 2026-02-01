@@ -120,13 +120,26 @@
         }
 
         .pay-table {
-            margin: 8px auto;
-            color: #AAAAFF;
-            font-size: 16px;
-            text-align: center;
-            min-height: 120px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 3px solid #FFFF00;
+            margin: 10px auto;
+            padding: 15px 20px;
+            color: #FFFF00;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: left;
+            min-height: 180px;
             white-space: pre;
             font-family: 'Courier New', monospace;
+            width: 95%;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
+        }
+
+        .pay-table .highlight {
+            background: #CC0000;
+            color: #FFFF00;
+            padding: 2px 6px;
+            border-radius: 3px;
         }
 
         .highlight {
@@ -174,26 +187,6 @@
             position: relative;
         }
 
-        .bet-indicator {
-            position: absolute;
-            top: -450px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: linear-gradient(135deg, #CC0000 0%, #FF3333 50%, #CC0000 100%);
-            border: 6px solid #FFFF00;
-            border-radius: 20px;
-            padding: 40px 80px;
-            font-size: 72px;
-            font-weight: bold;
-            color: #FFFF00;
-            text-shadow: 
-                0 0 10px rgba(255, 255, 0, 1),
-                0 0 20px rgba(255, 255, 0, 0.8),
-                4px 4px 8px rgba(0,0,0,1);
-            letter-spacing: 6px;
-            box-shadow: 0 0 40px rgba(255, 255, 0, 0.6);
-            z-index: 100;
-            pointer-events: none;
         }
 
         button {
@@ -549,7 +542,6 @@
             <pre class="info-bar" id="info-bar"></pre>
 
             <div class="controls">
-                <div class="bet-indicator" id="bet-indicator" style="display: none;">PLAY 5 CREDITS</div>
                 <div id="betting-controls">
                     <button onclick="game.setBet(1)">BET 1</button>
                     <button onclick="game.setBet(2)">BET 2</button>
@@ -733,11 +725,6 @@
                 this.bet = amount;
                 
                 // Show big bet indicator
-                const indicator = document.getElementById('bet-indicator');
-                if (indicator) {
-                    const numHands = this.getNumHands ? this.getNumHands() : 1;
-                    const totalBet = amount * numHands;
-                    indicator.textContent = `PLAY ${totalBet} CREDIT${totalBet > 1 ? 'S' : ''}`;
                     indicator.style.display = 'block';
                     setTimeout(() => {
                         indicator.style.display = 'none';
@@ -1167,11 +1154,6 @@
                 this.bet = amount;
                 
                 // Show big bet indicator
-                const indicator = document.getElementById('bet-indicator');
-                if (indicator) {
-                    const numHands = this.getNumHands ? this.getNumHands() : 1;
-                    const totalBet = amount * numHands;
-                    indicator.textContent = `PLAY ${totalBet} CREDIT${totalBet > 1 ? 'S' : ''}`;
                     indicator.style.display = 'block';
                     setTimeout(() => {
                         indicator.style.display = 'none';
@@ -1775,11 +1757,6 @@
                 this.bet = amount;
                 
                 // Show big bet indicator
-                const indicator = document.getElementById('bet-indicator');
-                if (indicator) {
-                    const numHands = this.getNumHands ? this.getNumHands() : 1;
-                    const totalBet = amount * numHands;
-                    indicator.textContent = `PLAY ${totalBet} CREDIT${totalBet > 1 ? 'S' : ''}`;
                     indicator.style.display = 'block';
                     setTimeout(() => {
                         indicator.style.display = 'none';
@@ -2072,17 +2049,17 @@
                 let payTableHTML = '';
                 const hands = Object.keys(this.payTable);
                 
-                payTableHTML += 'Hand                      1     2     3     4     5\n';
-                payTableHTML += '===================================================\n';
+                payTableHTML += 'Hand                  1      2      3      4      5\n';
+                payTableHTML += '======================================================\n';
                 
                 hands.forEach(hand => {
-                    let line = hand.padEnd(24, ' ') + '  ';
+                    let line = hand.toUpperCase().padEnd(20, '.') + '  ';
                     for (let i = 0; i < 5; i++) {
-                        const payout = this.payTable[hand][i].toString().padStart(4, ' ');
+                        const payout = this.payTable[hand][i].toString().padStart(5, ' ');
                         if (i === this.bet - 1) {
-                            line += `<span class="highlight">${payout}</span>  `;
+                            line += `<span class="highlight">${payout}</span> `;
                         } else {
-                            line += payout + '  ';
+                            line += payout + ' ';
                         }
                     }
                     payTableHTML += line + '\n';
@@ -2248,11 +2225,6 @@
                 this.bet = amount;
                 
                 // Show big bet indicator
-                const indicator = document.getElementById('bet-indicator');
-                if (indicator) {
-                    const numHands = this.getNumHands ? this.getNumHands() : 1;
-                    const totalBet = amount * numHands;
-                    indicator.textContent = `PLAY ${totalBet} CREDIT${totalBet > 1 ? 'S' : ''}`;
                     indicator.style.display = 'block';
                     setTimeout(() => {
                         indicator.style.display = 'none';
@@ -2715,11 +2687,6 @@
         this.bet = amount;
                 
                 // Show big bet indicator
-                const indicator = document.getElementById('bet-indicator');
-                if (indicator) {
-                    const numHands = this.getNumHands ? this.getNumHands() : 1;
-                    const totalBet = amount * numHands;
-                    indicator.textContent = `PLAY ${totalBet} CREDIT${totalBet > 1 ? 'S' : ''}`;
                     indicator.style.display = 'block';
                     setTimeout(() => {
                         indicator.style.display = 'none';
