@@ -232,7 +232,7 @@
             background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FFD700 100%);
             border: 6px solid #000000;
             border-radius: 50%;
-            width: 220px;
+            width: 240px;
             height: 130px;
             display: flex;
             flex-direction: column;
@@ -624,7 +624,7 @@
                     <button onclick="cycleSpeed()" class="control-btn">SPEED</button>
                     <div class="bet-display">
                         <div class="bet-label">BET</div>
-                        <div class="bet-amount" id="bet-amount">1</div>
+                        <div class="bet-amount" id="bet-amount">$1</div>
                     </div>
                     <button onclick="betUp()" class="control-btn">BET UP</button>
                     <button onclick="betMax()" class="control-btn">BET MAX</button>
@@ -642,7 +642,7 @@
                     <button onclick="cycleSpeed()" class="control-btn">SPEED</button>
                     <div class="bet-display">
                         <div class="bet-label">BET</div>
-                        <div class="bet-amount" id="bet-amount-hold">1</div>
+                        <div class="bet-amount" id="bet-amount-hold">$1</div>
                     </div>
                     <button onclick="betUp()" class="control-btn">BET UP</button>
                     <button onclick="betMax()" class="control-btn">BET MAX</button>
@@ -664,7 +664,7 @@
                     <button onclick="cycleSpeed()" class="control-btn">SPEED</button>
                     <div class="bet-display">
                         <div class="bet-label">BET</div>
-                        <div class="bet-amount" id="bet-amount-result">1</div>
+                        <div class="bet-amount" id="bet-amount-result">$1</div>
                     </div>
                     <button onclick="betUp()" class="control-btn">BET UP</button>
                     <button onclick="betMax()" class="control-btn">BET MAX</button>
@@ -3174,11 +3174,11 @@
 
         function updateBetDisplay() {
             if (!game) return;
-            document.getElementById('bet-amount').textContent = game.bet || 1;
+            document.getElementById('bet-amount').textContent = '$' + (game.bet || 1);
             const holdDisplay = document.getElementById('bet-amount-hold');
-            if (holdDisplay) holdDisplay.textContent = game.bet || 1;
+            if (holdDisplay) holdDisplay.textContent = '$' + (game.bet || 1);
             const resultDisplay = document.getElementById('bet-amount-result');
-            if (resultDisplay) resultDisplay.textContent = game.bet || 1;
+            if (resultDisplay) resultDisplay.textContent = '$' + (game.bet || 1);
         }
 
         function betUp() {
