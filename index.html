@@ -1769,8 +1769,8 @@
                 if (faceDown) {
                     // Face down card
                     cardDiv.style.cssText = `
-                        width: 120px;
-                        height: 170px;
+                        width: 280px;
+                        height: 400px;
                         background: #0000AA;
                         border: 3px solid #AAAAFF;
                         border-radius: 8px;
@@ -1784,8 +1784,8 @@
                 } else {
                     // Face up card
                     cardDiv.style.cssText = `
-                        width: 120px;
-                        height: 170px;
+                        width: 280px;
+                        height: 400px;
                         background: #FFFFFF;
                         border: 3px solid #333;
                         border-radius: 8px;
@@ -1805,8 +1805,8 @@
                         color: ${isRed ? '#DD0000' : '#000000'};
                     `;
                     topCorner.innerHTML = `
-                        <div style="font-size: 24px; font-weight: bold;">${card.rank}</div>
-                        <div style="font-size: 20px;">${card.suit}</div>
+                        <div style="font-size: 58px; font-weight: bold;">${card.rank}</div>
+                        <div style="font-size: 46px;">${card.suit}</div>
                     `;
                     
                     const centerSuit = document.createElement('div');
