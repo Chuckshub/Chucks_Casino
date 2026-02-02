@@ -594,7 +594,6 @@
             <div style="margin-bottom: 15px;">
             </div>
 
-            <div class="title" id="game-title">V I D E O   P O K E R</div>
             <div class="game-variant" style="display: none;" id="game-variant"></div>
             
             <div style="text-align: center;">
@@ -643,10 +642,13 @@
                     <div style="color: #CC0000; font-size: 28px; font-weight: bold; -webkit-text-stroke: 1px white; text-stroke: 1px white; margin-left: 20px; min-width: 200px;">
                         CASH $<span id="game-cash-display-hold">1000</span>
                     </div>
-                    <button onclick="game.stand ? game.stand() : null" id="stand-button" class="control-btn hidden">STAND</button>
-                    <button onclick="game.fold ? game.fold() : null" id="fold-button" class="control-btn hidden">FOLD</button>
-                    <button onclick="game.doubleDown ? game.doubleDown() : null" id="double-button" class="control-btn hidden">DOUBLE</button>
-                    <button onclick="game.split ? game.split() : null" id="split-button" class="control-btn hidden">SPLIT</button>
+                    <!-- Blackjack action buttons (hidden for video poker, shown for blackjack) -->
+                    <div id="blackjack-actions" style="display: none; gap: 8px;">
+                        <button onclick="game.hit()" class="control-btn" id="hit-button">HIT</button>
+                        <button onclick="game.stand()" class="control-btn" id="stand-button-bj">STAND</button>
+                        <button onclick="game.doubleDown()" class="control-btn" id="double-button-bj" style="display: none;">DOUBLE</button>
+                        <button onclick="game.split()" class="control-btn" id="split-button-bj" style="display: none;">SPLIT</button>
+                    </div>
                 </div>
                 <div id="result-controls" class="casino-controls hidden">
                     <div style="color: #CC0000; font-size: 28px; font-weight: bold; -webkit-text-stroke: 1px white; text-stroke: 1px white; margin-right: 20px; min-width: 200px;">
