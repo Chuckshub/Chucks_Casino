@@ -1296,19 +1296,19 @@
                 document.getElementById('betting-controls').classList.add('hidden');
                 document.getElementById('holding-controls').classList.remove('hidden');
                 document.getElementById('action-button').classList.remove('hidden'); // Show HIT button
-                document.getElementById('stand-button').classList.remove('hidden'); // Show STAND button
+                document.getElementById('stand-button')?.classList.remove('hidden'); // Show STAND button
                 document.getElementById('result').innerHTML = '&nbsp;';
                 
                 if (this.canSplit) {
-                    document.getElementById('split-button').classList.remove('hidden');
+                    document.getElementById('split-button')?.classList.remove('hidden');
                 } else {
-                    document.getElementById('split-button').classList.add('hidden');
+                    document.getElementById('split-button')?.classList.add('hidden');
                 }
                 
                 if (this.canDouble) {
-                    document.getElementById('double-button').classList.remove('hidden');
+                    document.getElementById('double-button')?.classList.remove('hidden');
                 } else {
-                    document.getElementById('double-button').classList.add('hidden');
+                    document.getElementById('double-button')?.classList.add('hidden');
                 }
                 
                 this.renderCards();
@@ -1326,8 +1326,8 @@
                 // Can't split or double after hitting
                 this.canSplit = false;
                 this.canDouble = false;
-                document.getElementById('split-button').classList.add('hidden');
-                document.getElementById('double-button').classList.add('hidden');
+                document.getElementById('split-button')?.classList.add('hidden');
+                document.getElementById('double-button')?.classList.add('hidden');
                 
                 this.playerHand.push(this.deck.deal(1)[0]);
                 this.cardsToAnimate = [this.playerHand.length - 1];
@@ -1361,8 +1361,8 @@
                 }
                 
                 // Hide split and double buttons once action is taken
-                document.getElementById('split-button').classList.add('hidden');
-                document.getElementById('double-button').classList.add('hidden');
+                document.getElementById('split-button')?.classList.add('hidden');
+                document.getElementById('double-button')?.classList.add('hidden');
                 
                 // If we have split hands and this is the first hand, move to second hand
                 if (this.isSplit && this.currentHandIndex === 0) {
@@ -1396,8 +1396,8 @@
                 }
                 
                 // Hide buttons
-                document.getElementById('split-button').classList.add('hidden');
-                document.getElementById('double-button').classList.add('hidden');
+                document.getElementById('split-button')?.classList.add('hidden');
+                document.getElementById('double-button')?.classList.add('hidden');
                 
                 // Take one card and automatically stand
                 this.playerHand.push(this.deck.deal(1)[0]);
@@ -1455,8 +1455,8 @@
                 // Can't split or double after splitting
                 this.canSplit = false;
                 this.canDouble = false;
-                document.getElementById('split-button').classList.add('hidden');
-                document.getElementById('double-button').classList.add('hidden');
+                document.getElementById('split-button')?.classList.add('hidden');
+                document.getElementById('double-button')?.classList.add('hidden');
                 
                 this.cardsToAnimate = [1];
                 document.getElementById('result').textContent = 'Hand 1 of 2';
@@ -3224,10 +3224,10 @@
             cardsArea.style.gap = '';
             
             // Reset button visibility
-            document.getElementById('fold-button').classList.add('hidden');
-            document.getElementById('stand-button').classList.add('hidden');
-            document.getElementById('double-button').classList.add('hidden');
-            document.getElementById('split-button').classList.add('hidden');
+            document.getElementById('fold-button')?.classList.add('hidden');
+            document.getElementById('stand-button')?.classList.add('hidden');
+            document.getElementById('double-button')?.classList.add('hidden');
+            document.getElementById('split-button')?.classList.add('hidden');
             document.getElementById('result-controls').classList.add('hidden');
             document.getElementById('holding-controls').classList.add('hidden');
             document.getElementById('betting-controls').classList.remove('hidden');
@@ -3296,7 +3296,7 @@
                 const resultVariant = document.getElementById('game-variant-display-result');
                 if (resultVariant) resultVariant.textContent = variantText;
                 document.getElementById('action-button').textContent = 'PLAY';
-                document.getElementById('fold-button').classList.remove('hidden');
+                document.getElementById('fold-button')?.classList.remove('hidden');
                 document.getElementById('key-help').textContent = 'Keys: P (play) | F (fold) | SPACE (deal) | ENTER (continue)';
                 game = new ThreeCardPokerGame();
             }
