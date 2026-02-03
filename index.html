@@ -1957,7 +1957,9 @@
                 const isFlush = suits.every(s => s === suits[0]);
                 
                 // Check for straight
-                const isStraight = this.checkStraight(values);
+                const isStraight = this.gameType === 'deuces' ? 
+                    this.checkStraightWithWilds(values, deuceCount) : 
+                    this.checkStraight(values);
                 const isWheelStraight = values.join(',') === '2,3,4,5,14'; // A-2-3-4-5
                 const actualStraight = isStraight || isWheelStraight;
                 
@@ -2113,6 +2115,72 @@
                     }
                 }
                 return true;
+            }
+
+            checkStraightWithWilds(values, deuceCount) {
+                if (deuceCount === 0) {
+                    // No wilds - use regular straight check
+                    for (let i = 0; i < values.length - 1; i++) {
+                        if (values[i + 1] - values[i] !== 1) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+                
+                // Special case: Check for wheel (A-2-3-4-5) with wild
+                const hasAce = values.includes(14);
+                if (hasAce) {
+                    const wheelValues = values.map(v => v === 14 ? 1 : v).sort((a, b) => a - b);
+                    const wheelNonDeuces = wheelValues.filter(v => v !== 2);
+                    
+                    if (wheelNonDeuces.length > 0 && wheelNonDeuces[wheelNonDeuces.length - 1] <= 5) {
+                        let needed = 0;
+                        const wheelTarget = [1, 2, 3, 4, 5];
+                        for (const target of wheelTarget) {
+                            if (!wheelNonDeuces.includes(target)) {
+                                needed++;
+                            }
+                        }
+                        if (needed <= deuceCount) {
+                            return true;
+                        }
+                    }
+                }
+                
+                // Get non-deuce values
+                const nonDeuceValues = values.filter(v => v !== 2).sort((a, b) => a - b);
+                
+                if (nonDeuceValues.length === 0) {
+                    return true; // All wilds
+                }
+                
+                // Try to make a straight starting from the minimum non-deuce value
+                for (let start = nonDeuceValues[0]; start <= nonDeuceValues[0]; start++) {
+                    const straightNeeded = [start, start + 1, start + 2, start + 3, start + 4];
+                    let wildNeeded = 0;
+                    let valid = true;
+                    
+                    for (const val of straightNeeded) {
+                        if (!nonDeuceValues.includes(val)) {
+                            wildNeeded++;
+                        }
+                    }
+                    
+                    // Check if all non-deuce cards fit in this straight
+                    for (const val of nonDeuceValues) {
+                        if (val < start || val > start + 4) {
+                            valid = false;
+                            break;
+                        }
+                    }
+                    
+                    if (valid && wildNeeded <= deuceCount) {
+                        return true;
+                    }
+                }
+                
+                return false;
             }
 
             newGame() {
@@ -2272,7 +2340,7 @@
                     const isDeuce = this.gameType === 'deuces' && card.rank === '2';
                     centerSuit.style.cssText = `
                         text-align: center;
-                        font-size: ${isDeuce ? '20px' : '48px'};
+                        font-size: ${isDeuce ? '48px' : '48px'};
                         color: ${isRed ? '#DD0000' : '#000000'};
                         font-weight: ${isDeuce ? 'bold' : 'normal'};
                     `;
