@@ -1861,13 +1861,6 @@
                         <div style="font-size: ${bottomFontSize}px; font-weight: bold;">${card.rank}</div>
                         <div style="font-size: ${bottomSuitSize}px;">${card.suit}</div>
                     `;
-                        transform: rotate(180deg);
-                        color: ${isRed ? '#DD0000' : '#000000'};
-                    `;
-                    bottomCorner.innerHTML = `
-                        <div style="font-size: 24px; font-weight: bold;">${card.rank}</div>
-                        <div style="font-size: 20px;">${card.suit}</div>
-                    `;
                     
                     cardDiv.appendChild(topCorner);
                     cardDiv.appendChild(centerSuit);
