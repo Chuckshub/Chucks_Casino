@@ -1767,20 +1767,14 @@
                 }
                 
                 if (faceDown) {
-                    // Face down card
-                    cardDiv.style.cssText = `
-                        width: 280px;
-                        height: 400px;
-                        background: #0000AA;
-                        border: 3px solid #AAAAFF;
-                        border-radius: 8px;
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-                        ${shouldAnimate ? `animation-delay: ${(index % 100) * 0.1}s;` : ''}
-                    `;
-                    cardDiv.innerHTML = '<div style="color: #AAAAFF; font-size: 40px;">?</div>';
+                    // Face down card - use proper card back
+                    const cardBack = createCardBack(280, 400);
+                    if (shouldAnimate) {
+                        cardBack.className = 'card-dealing';
+                        cardBack.style.animationDelay = `${(index % 100) * 0.1}s`;
+                    }
+                    container.appendChild(cardBack);
+                    return container;
                 } else {
                     // Face up card
                     cardDiv.style.cssText = `
@@ -1812,7 +1806,7 @@
                     const centerSuit = document.createElement('div');
                     centerSuit.style.cssText = `
                         text-align: center;
-                        font-size: 48px;
+                        font-size: 96px;
                         color: ${isRed ? '#DD0000' : '#000000'};
                     `;
                     centerSuit.textContent = card.suit;
@@ -2340,7 +2334,7 @@
                     const isDeuce = this.gameType === 'deuces' && card.rank === '2';
                     centerSuit.style.cssText = `
                         text-align: center;
-                        font-size: ${isDeuce ? '48px' : '48px'};
+                        font-size: ${isDeuce ? '48px' : '96px'};
                         color: ${isRed ? '#DD0000' : '#000000'};
                         font-weight: ${isDeuce ? 'bold' : 'normal'};
                     `;
@@ -3426,6 +3420,9 @@
                 if (game.state === 'holding' && game.toggleHold) {
                     game.toggleHold(1); // Hold card 2
                     e.preventDefault();
+                } else if (currentGameType === 'blackjack' && game.state === 'playing') {
+                    game.hit(); // Hit in blackjack
+                    e.preventDefault();
                 } else if (game.state !== 'holding') {
                     console.log('Options - not yet implemented');
                     e.preventDefault();
@@ -3433,6 +3430,9 @@
             } else if (key === '3') {
                 if (game.state === 'holding' && game.toggleHold) {
                     game.toggleHold(2); // Hold card 3
+                    e.preventDefault();
+                } else if (currentGameType === 'blackjack' && game.state === 'playing') {
+                    game.stand(); // Stand in blackjack
                     e.preventDefault();
                 } else if (game.state !== 'holding') {
                     cycleSpeed();
@@ -3442,6 +3442,9 @@
                 if (game.state === 'holding' && game.toggleHold) {
                     game.toggleHold(3); // Hold card 4
                     e.preventDefault();
+                } else if (currentGameType === 'blackjack' && game.state === 'playing' && game.canDouble) {
+                    game.doubleDown(); // Double in blackjack
+                    e.preventDefault();
                 } else if (game.state === 'betting') {
                     betUp();
                     e.preventDefault();
@@ -3449,6 +3452,9 @@
             } else if (key === '5') {
                 if (game.state === 'holding' && game.toggleHold) {
                     game.toggleHold(4); // Hold card 5
+                    e.preventDefault();
+                } else if (currentGameType === 'blackjack' && game.state === 'playing' && game.canSplit) {
+                    game.split(); // Split in blackjack
                     e.preventDefault();
                 } else if (game.state === 'betting') {
                     betMax();
