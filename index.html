@@ -290,15 +290,17 @@
         @keyframes dealCard {
             0% {
                 opacity: 0;
-                transform: translateY(-100px) scale(0.5);
+                transform: translateX(-300px) translateY(-50px) rotate(-15deg) scale(0.8);
             }
-            60% {
+            40% {
                 opacity: 1;
-                transform: translateY(10px) scale(1.05);
+            }
+            70% {
+                transform: translateX(10px) translateY(5px) rotate(2deg) scale(1.05);
             }
             100% {
                 opacity: 1;
-                transform: translateY(0) scale(1);
+                transform: translateX(0) translateY(0) rotate(0deg) scale(1);
             }
         }
 
@@ -316,7 +318,7 @@
 
         .card-dealing {
             opacity: 0;
-            animation: dealCard 0.5s ease-out forwards;
+            animation: dealCard 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
         }
 
         .card-flipping {
@@ -1483,7 +1485,21 @@
                     const playerValue = this.getHandValue(this.playerHand);
                     const dealerValue = this.getHandValue(this.dealerHand);
                     
-                    if (dealerValue > 21) {
+                    // Check for natural blackjack (21 with first 2 cards)
+                    const playerBlackjack = playerValue === 21 && this.playerHand.length === 2;
+                    const dealerBlackjack = dealerValue === 21 && this.dealerHand.length === 2;
+                    
+                    if (playerBlackjack && dealerBlackjack) {
+                        // Both have blackjack - push
+                        this.endGame(`PUSH - Both Blackjack!`, this.bet);
+                    } else if (playerBlackjack) {
+                        // Player natural blackjack pays 3:2
+                        const blackjackPayout = Math.floor(this.bet * 2.5);
+                        this.endGame(`BLACKJACK! You WIN $${blackjackPayout}!`, blackjackPayout);
+                    } else if (dealerBlackjack) {
+                        // Dealer has blackjack
+                        this.endGame('Dealer Blackjack - Dealer Wins');
+                    } else if (dealerValue > 21) {
                         this.endGame(`Dealer BUSTS! You WIN $${this.bet * 2}`, this.bet * 2);
                     } else if (playerValue > dealerValue) {
                         this.endGame(`You WIN $${this.bet * 2}!`, this.bet * 2);
@@ -1634,7 +1650,7 @@
             updateDisplay() {
                 // Pay table area - show rules for blackjack
                 let payTableHTML = '';
-                payTableHTML += 'BLACKJACK PAYS 1:1\n';
+                payTableHTML += 'BLACKJACK PAYS 3:2\n';
                 payTableHTML += 'Dealer must draw to 17\n';
                 
                 document.getElementById('pay-table').innerHTML = payTableHTML;
@@ -1660,6 +1676,23 @@
                 cardsArea.style.alignItems = 'center';
                 cardsArea.style.gap = '60px';
                 
+                // Calculate card size based on number of cards
+                const maxCards = Math.max(this.playerHand.length, this.dealerHand.length);
+                let cardWidth, cardHeight, fontSize;
+                if (maxCards >= 6) {
+                    cardWidth = 180;
+                    cardHeight = 260;
+                    fontSize = 60;
+                } else if (maxCards >= 4) {
+                    cardWidth = 220;
+                    cardHeight = 320;
+                    fontSize = 75;
+                } else {
+                    cardWidth = 280;
+                    cardHeight = 400;
+                    fontSize = 96;
+                }
+                
                 // Dealer's section
                 const dealerSection = document.createElement('div');
                 dealerSection.style.cssText = 'display: flex; flex-direction: column; align-items: center;';
@@ -1673,7 +1706,7 @@
                 dealerRow.style.cssText = 'display: flex; gap: 8px;';
                 
                 this.dealerHand.forEach((card, i) => {
-                    const container = this.createCardElement(card, i + 100, i > 0 && !this.dealerRevealed);
+                    const container = this.createCardElement(card, i + 100, i > 0 && !this.dealerRevealed, cardWidth, cardHeight, fontSize);
                     dealerRow.appendChild(container);
                 });
                 dealerSection.appendChild(dealerRow);
@@ -1706,7 +1739,7 @@
                     playerRow.style.cssText = 'display: flex; gap: 8px;';
                     
                     this.playerHand.forEach((card, i) => {
-                        const container = this.createCardElement(card, i, false);
+                        const container = this.createCardElement(card, i, false, cardWidth, cardHeight, fontSize);
                         playerRow.appendChild(container);
                     });
                     
@@ -1735,7 +1768,7 @@
                         playerRow.style.cssText = 'display: flex; gap: 8px;';
                         
                         this.splitHands[handIndex].forEach((card, i) => {
-                            const container = this.createCardElement(card, i + (handIndex * 10), false);
+                            const container = this.createCardElement(card, i + (handIndex * 10), false, cardWidth, cardHeight, fontSize);
                             playerRow.appendChild(container);
                         });
                         
@@ -1754,7 +1787,7 @@
                 this.cardsToAnimate = [];
             }
 
-            createCardElement(card, index, faceDown) {
+            createCardElement(card, index, faceDown, width = 280, height = 400, centerFontSize = 96) {
                 const container = document.createElement('div');
                 container.style.cssText = 'text-align: center; position: relative;';
                 
@@ -1768,18 +1801,24 @@
                 
                 if (faceDown) {
                     // Face down card - use proper card back
-                    const cardBack = createCardBack(280, 400);
+                    const cardBack = createCardBack(width, height);
                     if (shouldAnimate) {
                         cardBack.className = 'card-dealing';
-                        cardBack.style.animationDelay = `${(index % 100) * 0.1}s`;
+                        cardBack.style.animationDelay = `${(index % 100) * 0.15}s`;
                     }
                     container.appendChild(cardBack);
                     return container;
                 } else {
+                    // Scale font sizes proportionally
+                    const topFontSize = Math.floor(width * 0.21);
+                    const topSuitSize = Math.floor(width * 0.16);
+                    const bottomFontSize = Math.floor(width * 0.086);
+                    const bottomSuitSize = Math.floor(width * 0.071);
+                    
                     // Face up card
                     cardDiv.style.cssText = `
-                        width: 280px;
-                        height: 400px;
+                        width: ${width}px;
+                        height: ${height}px;
                         background: #FFFFFF;
                         border: 3px solid #333;
                         border-radius: 8px;
@@ -1789,7 +1828,7 @@
                         padding: 8px 6px;
                         box-shadow: 0 4px 8px rgba(0,0,0,0.3);
                         overflow: hidden;
-                        ${shouldAnimate ? `animation-delay: ${(index % 100) * 0.1}s;` : ''}
+                        ${shouldAnimate ? `animation-delay: ${(index % 100) * 0.15}s;` : ''}
                     `;
                     
                     const topCorner = document.createElement('div');
@@ -1799,14 +1838,14 @@
                         color: ${isRed ? '#DD0000' : '#000000'};
                     `;
                     topCorner.innerHTML = `
-                        <div style="font-size: 58px; font-weight: bold;">${card.rank}</div>
-                        <div style="font-size: 46px;">${card.suit}</div>
+                        <div style="font-size: ${topFontSize}px; font-weight: bold;">${card.rank}</div>
+                        <div style="font-size: ${topSuitSize}px;">${card.suit}</div>
                     `;
                     
                     const centerSuit = document.createElement('div');
                     centerSuit.style.cssText = `
                         text-align: center;
-                        font-size: 96px;
+                        font-size: ${centerFontSize}px;
                         color: ${isRed ? '#DD0000' : '#000000'};
                     `;
                     centerSuit.textContent = card.suit;
@@ -1815,6 +1854,13 @@
                     bottomCorner.style.cssText = `
                         text-align: right;
                         line-height: 1;
+                        transform: rotate(180deg);
+                        color: ${isRed ? '#DD0000' : '#000000'};
+                    `;
+                    bottomCorner.innerHTML = `
+                        <div style="font-size: ${bottomFontSize}px; font-weight: bold;">${card.rank}</div>
+                        <div style="font-size: ${bottomSuitSize}px;">${card.suit}</div>
+                    `;
                         transform: rotate(180deg);
                         color: ${isRed ? '#DD0000' : '#000000'};
                     `;
