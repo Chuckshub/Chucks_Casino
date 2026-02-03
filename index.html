@@ -154,7 +154,6 @@
             justify-content: center;
             align-items: flex-start;
             flex-wrap: wrap;
-            padding-top: 180px;
         }
 
         .card {
@@ -3346,6 +3345,13 @@
             cardsArea.style.justifyContent = '';
             cardsArea.style.alignItems = '';
             cardsArea.style.gap = '';
+            
+            // Set game-specific padding for cards area
+            if (gameType === 'jacks' || gameType === 'deuces' || gameType === 'multihand' || gameType === 'spinpoker' || gameType === 'threecard') {
+                cardsArea.style.paddingTop = '20px'; // Video poker games - cards near top
+            } else if (gameType === 'blackjack') {
+                cardsArea.style.paddingTop = '180px'; // Blackjack - cards more centered
+            }
             
             // Reset button visibility
             document.getElementById('fold-button')?.classList.add('hidden');
