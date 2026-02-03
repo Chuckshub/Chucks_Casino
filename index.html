@@ -1303,6 +1303,11 @@
                 this.playerHand.push(this.deck.deal(1)[0]);
                 this.dealerHand.push(this.deck.deal(1)[0]);
                 
+                // Play card dealing sound
+                if (window.casinoSounds) {
+                    window.casinoSounds.cardDeal();
+                }
+                
                 this.cardsToAnimate = [0, 1, 2, 3];
                 this.state = 'playing';
                 this.hasDoubled = false;
@@ -1510,19 +1515,32 @@
                         // Both have blackjack - push
                         this.endGame(`PUSH - Both Blackjack!`, this.bet);
                     } else if (playerBlackjack) {
-                        // Player natural blackjack pays 3:2
+                        // Player natural blackjack pays 3:2 - BIG WIN SOUND!
                         const blackjackPayout = Math.floor(this.bet * 2.5);
+                        if (window.casinoSounds) {
+                            window.casinoSounds.bigWin();
+                        }
                         this.endGame(`BLACKJACK! You WIN $${blackjackPayout}!`, blackjackPayout);
                     } else if (dealerBlackjack) {
                         // Dealer has blackjack
                         this.endGame('Dealer Blackjack - Dealer Wins');
                     } else if (dealerValue > 21) {
+                        // Player wins - small win sound
+                        if (window.casinoSounds) {
+                            window.casinoSounds.smallWin();
+                        }
                         this.endGame(`Dealer BUSTS! You WIN $${this.bet * 2}`, this.bet * 2);
                     } else if (playerValue > dealerValue) {
+                        // Player wins - small win sound
+                        if (window.casinoSounds) {
+                            window.casinoSounds.smallWin();
+                        }
                         this.endGame(`You WIN $${this.bet * 2}!`, this.bet * 2);
                     } else if (dealerValue > playerValue) {
+                        // Dealer wins - no sound
                         this.endGame('Dealer Wins');
                     } else {
+                        // Push - no sound
                         this.endGame(`PUSH - Tie!`, this.bet);
                     }
                 } else {
@@ -1930,6 +1948,11 @@
                 this.cardsToAnimate = [0, 1, 2, 3, 4];
                 this.state = 'holding';
                 
+                // Play card dealing sound
+                if (window.casinoSounds) {
+                    window.casinoSounds.cardDeal();
+                }
+                
                 document.getElementById('betting-controls').classList.add('hidden');
                 document.getElementById('holding-controls').classList.remove('hidden');
                 document.getElementById('result').textContent = 'Select cards to HOLD';
@@ -1941,11 +1964,22 @@
             toggleHold(index) {
                 if (this.state !== 'holding') return;
                 this.held[index] = !this.held[index];
+                
+                // Play hold sound
+                if (window.casinoSounds) {
+                    window.casinoSounds.cardHold();
+                }
+                
                 this.renderCards();
             }
 
             draw() {
                 if (this.state !== 'holding') return;
+                
+                // Play draw sound
+                if (window.casinoSounds) {
+                    window.casinoSounds.cardDraw();
+                }
                 
                 this.cardsToAnimate = [];
                 for (let i = 0; i < 5; i++) {
@@ -1975,6 +2009,21 @@
                     globalCash = this.cash;
                     updateHomeCash();
                     document.getElementById('result').textContent = `${handType}! WIN $${winAmount}`;
+                    
+                    // Play appropriate sound based on hand strength
+                    if (window.casinoSounds) {
+                        const bigWinHands = ['Royal Flush', 'Natural Royal Flush', 'Four Deuces', 'Straight Flush', 'Four of a Kind', 'Full House', 'Wild Royal Flush', 'Five of a Kind'];
+                        if (bigWinHands.includes(handType)) {
+                            // Royal flush gets jackpot sound
+                            if (handType === 'Royal Flush' || handType === 'Natural Royal Flush' || handType === 'Four Deuces') {
+                                window.casinoSounds.jackpot();
+                            } else {
+                                window.casinoSounds.bigWin();
+                            }
+                        } else {
+                            window.casinoSounds.smallWin();
+                        }
+                    }
                     
                     // Track stats
                     if (window.stats && window.stats.gameResult) {
@@ -3349,10 +3398,10 @@
             // Set game-specific padding for cards area
             if (gameType === 'jacks' || gameType === 'deuces' || gameType === 'multihand' || gameType === 'spinpoker' || gameType === 'threecard') {
                 cardsArea.style.paddingTop = '20px'; // Video poker games - cards near top
-                document.getElementById('result').style.top = '300px'; // Lower - below pay table
+                document.getElementById('result').style.top = '320px'; // Lower - more space below pay table
             } else if (gameType === 'blackjack') {
                 cardsArea.style.paddingTop = '180px'; // Blackjack - cards more centered
-                document.getElementById('result').style.top = '80px'; // Higher - top of screen
+                document.getElementById('result').style.top = '100px'; // Higher - prominent at top
             }
             
             // Reset button visibility
@@ -3693,5 +3742,8 @@
     
     <!-- Firebase Stats Integration -->
     <script src="firebase-stats.js"></script>
+    
+    <!-- Casino Sound Effects -->
+    <script src="sounds.js"></script>
 </body>
 </html>
