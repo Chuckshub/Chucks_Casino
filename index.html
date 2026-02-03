@@ -279,7 +279,7 @@
 
         .result {
             position: absolute;
-            top: 220px;
+            top: 260px;
             left: 50%;
             transform: translateX(-50%);
             text-align: center;
@@ -3349,8 +3349,10 @@
             // Set game-specific padding for cards area
             if (gameType === 'jacks' || gameType === 'deuces' || gameType === 'multihand' || gameType === 'spinpoker' || gameType === 'threecard') {
                 cardsArea.style.paddingTop = '20px'; // Video poker games - cards near top
+                document.getElementById('result').style.top = '300px'; // Lower - below pay table
             } else if (gameType === 'blackjack') {
                 cardsArea.style.paddingTop = '180px'; // Blackjack - cards more centered
+                document.getElementById('result').style.top = '80px'; // Higher - top of screen
             }
             
             // Reset button visibility
