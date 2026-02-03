@@ -199,3 +199,101 @@ if (typeof window !== 'undefined') {
         jackpot: playJackpot
     };
 }
+
+// ============================================================================
+// FIREWORKS ANIMATION FOR JACKPOT WINS
+// ============================================================================
+
+let fireworksParticles = [];
+let fireworksAnimationId = null;
+
+// Pixel particle class
+class FireworkParticle {
+    constructor(x, y, color, vx, vy) {
+        this.x = x;
+        this.y = y;
+        this.color = color;
+        this.vx = vx;
+        this.vy = vy;
+        this.life = 100;
+        this.size = 4;
+    }
+
+    update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.vy += 0.15; // Gravity
+        this.life -= 2;
+    }
+
+    draw(ctx) {
+        if (this.life > 0) {
+            ctx.fillStyle = this.color;
+            ctx.fillRect(Math.floor(this.x), Math.floor(this.y), this.size, this.size);
+        }
+    }
+}
+
+// Create firework burst
+function createFirework(ctx, x, y, colors, count = 30) {
+    for (let i = 0; i < count; i++) {
+        const angle = (Math.PI * 2 * i) / count;
+        const speed = 2 + Math.random() * 2;
+        const vx = Math.cos(angle) * speed;
+        const vy = Math.sin(angle) * speed;
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        fireworksParticles.push(new FireworkParticle(x, y, color, vx, vy));
+    }
+}
+
+// Animation loop
+function animateFireworks(canvas, ctx) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    fireworksParticles = fireworksParticles.filter(p => p.life > 0);
+
+    fireworksParticles.forEach(particle => {
+        particle.update();
+        particle.draw(ctx);
+    });
+
+    if (fireworksParticles.length > 0) {
+        fireworksAnimationId = requestAnimationFrame(() => animateFireworks(canvas, ctx));
+    } else {
+        fireworksAnimationId = null;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        canvas.style.display = 'none'; // Hide canvas when done
+    }
+}
+
+// JACKPOT FIREWORKS - Trigger the visual display
+function playJackpotFireworks() {
+    const canvas = document.getElementById('fireworksCanvas');
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    
+    // Show and resize canvas
+    canvas.style.display = 'block';
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    // MASSIVE FIREWORKS DISPLAY!
+    const colors = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#FFD700', '#FFA500'];
+    for (let i = 0; i < 8; i++) {
+        setTimeout(() => {
+            const x = 100 + Math.random() * (canvas.width - 200);
+            const y = 80 + Math.random() * (canvas.height - 160);
+            createFirework(ctx, x, y, colors, 50);
+        }, i * 100);
+    }
+    
+    if (!fireworksAnimationId) {
+        animateFireworks(canvas, ctx);
+    }
+}
+
+// Update window exports to include fireworks
+if (typeof window !== 'undefined') {
+    window.playJackpotFireworks = playJackpotFireworks;
+}
