@@ -93,6 +93,9 @@
         /* GAME SCREEN STYLES */
         #game-screen {
             display: none;
+            position: relative;
+            width: 100%;
+            height: 100%;
         }
 
         pre {
@@ -144,14 +147,15 @@
         }
 
         .cards-area {
-            margin: 5px 0;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             text-align: center;
-            min-height: 420px;
             display: flex;
             justify-content: center;
-            align-items: flex-start;
+            align-items: center;
             flex-wrap: wrap;
-            padding-top: 5px;
         }
 
         .card {
@@ -276,12 +280,16 @@
         }
 
         .result {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
             text-align: center;
             color: #FFFF00;
-            font-size: 24px;
+            font-size: 36px;
             font-weight: bold;
-            margin: 8px 0;
-            min-height: 40px; height: 40px;
+            min-height: 40px;
+            z-index: 10;
         }
         
         .result:empty::before {
@@ -1708,7 +1716,7 @@
                 dealerSection.style.cssText = 'display: flex; flex-direction: column; align-items: center;';
                 
                 const dealerLabel = document.createElement('div');
-                dealerLabel.style.cssText = 'text-align: center; color: #AAAAFF; font-size: 18px; font-weight: bold; margin-bottom: 10px;';
+                dealerLabel.style.cssText = 'text-align: center; color: #AAAAFF; font-size: 32px; font-weight: bold; margin-bottom: 10px;';
                 dealerLabel.textContent = 'DEALER';
                 dealerSection.appendChild(dealerLabel);
                 
@@ -1723,7 +1731,7 @@
                 
                 // Dealer's hand total
                 const dealerTotal = document.createElement('div');
-                dealerTotal.style.cssText = 'text-align: center; color: #FFFF00; font-size: 20px; font-weight: bold; margin-top: 10px;';
+                dealerTotal.style.cssText = 'text-align: center; color: #FFFF00; font-size: 48px; font-weight: bold; margin-top: 10px;';
                 if (this.dealerRevealed) {
                     dealerTotal.textContent = this.getHandValue(this.dealerHand);
                 } else {
@@ -1741,7 +1749,7 @@
                     playerSection.style.cssText = 'display: flex; flex-direction: column; align-items: center;';
                     
                     const playerLabel = document.createElement('div');
-                    playerLabel.style.cssText = 'text-align: center; color: #AAAAFF; font-size: 18px; font-weight: bold; margin-bottom: 10px;';
+                    playerLabel.style.cssText = 'text-align: center; color: #AAAAFF; font-size: 32px; font-weight: bold; margin-bottom: 10px;';
                     playerLabel.textContent = 'PLAYER';
                     playerSection.appendChild(playerLabel);
                     
@@ -1757,7 +1765,7 @@
                     
                     // Player's hand total
                     const playerTotal = document.createElement('div');
-                    playerTotal.style.cssText = 'text-align: center; color: #FFFF00; font-size: 20px; font-weight: bold; margin-top: 10px;';
+                    playerTotal.style.cssText = 'text-align: center; color: #FFFF00; font-size: 48px; font-weight: bold; margin-top: 10px;';
                     playerTotal.textContent = this.playerHand.length > 0 ? this.getHandValue(this.playerHand) : '-';
                     playerSection.appendChild(playerTotal);
                     
@@ -1770,7 +1778,7 @@
                         playerSection.style.cssText = `display: flex; flex-direction: column; align-items: center; ${isActive ? 'opacity: 1;' : 'opacity: 0.6;'}`;
                         
                         const playerLabel = document.createElement('div');
-                        playerLabel.style.cssText = 'text-align: center; color: #AAAAFF; font-size: 18px; font-weight: bold; margin-bottom: 10px;';
+                        playerLabel.style.cssText = 'text-align: center; color: #AAAAFF; font-size: 32px; font-weight: bold; margin-bottom: 10px;';
                         playerLabel.textContent = `HAND ${handIndex + 1}${isActive ? ' (Active)' : ''}`;
                         playerSection.appendChild(playerLabel);
                         
@@ -1786,7 +1794,7 @@
                         
                         // Hand total
                         const handTotal = document.createElement('div');
-                        handTotal.style.cssText = 'text-align: center; color: #FFFF00; font-size: 20px; font-weight: bold; margin-top: 10px;';
+                        handTotal.style.cssText = 'text-align: center; color: #FFFF00; font-size: 48px; font-weight: bold; margin-top: 10px;';
                         handTotal.textContent = this.getHandValue(this.splitHands[handIndex]);
                         playerSection.appendChild(handTotal);
                         
