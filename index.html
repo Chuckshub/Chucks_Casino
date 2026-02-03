@@ -177,10 +177,15 @@
         }
 
         .controls {
-            margin: 10px 0;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: 0;
             text-align: center;
             min-height: 70px;
-            position: relative;
+            padding-bottom: 10px;
+            background: #0000AA;
         }
 
         .casino-controls {
@@ -1062,6 +1067,12 @@
             }
 
             updateDisplay() {
+                // Make sure pay table is visible
+                const payTable = document.getElementById('pay-table');
+                if (payTable) {
+                    payTable.style.display = 'inline-block';
+                }
+                
                 let payTableHTML = '';
                 const hands = [
                     { name: 'Straight Flush', payout: '40:1', ante: '5:1' },
@@ -1648,12 +1659,11 @@
             }
 
             updateDisplay() {
-                // Pay table area - show rules for blackjack
-                let payTableHTML = '';
-                payTableHTML += 'BLACKJACK PAYS 3:2\n';
-                payTableHTML += 'Dealer must draw to 17\n';
-                
-                document.getElementById('pay-table').innerHTML = payTableHTML;
+                // Hide pay table for blackjack
+                const payTable = document.getElementById('pay-table');
+                if (payTable) {
+                    payTable.style.display = 'none';
+                }
 
                 // Info bar
                 document.getElementById('info-bar').innerHTML = '';
@@ -2264,6 +2274,11 @@
                 let payTableHTML = '';
                 const hands = Object.keys(this.payTable);
                 
+                // Make sure pay table is visible
+                const payTable = document.getElementById('pay-table');
+                if (payTable) {
+                    payTable.style.display = 'inline-block';
+                }
                 
                 hands.forEach(hand => {
                     let line = hand.toUpperCase().padEnd(22, '.') + '  ';
