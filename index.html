@@ -1690,9 +1690,10 @@
                 cardsArea.style.opacity = '1';
                 cardsArea.style.transition = '';
                 cardsArea.style.display = 'flex';
+                cardsArea.style.flexDirection = 'column';
                 cardsArea.style.justifyContent = 'center';
                 cardsArea.style.alignItems = 'center';
-                cardsArea.style.gap = '60px';
+                cardsArea.style.gap = '40px';
                 
                 // Calculate card size based on number of cards
                 const maxCards = Math.max(this.playerHand.length, this.dealerHand.length);
