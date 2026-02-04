@@ -1,8 +1,12 @@
 // Casino Video Poker Sound Effects
 // Retro 80s/90s casino sounds using Web Audio API
 
+// Global volume setting (controlled by game)
+let globalVolume = 0.5;
+
 // CARD DEAL - Shuffle sound of cards being laid out
 function playCardDeal() {
+    if (globalVolume === 0) return;
     const audioContext = new AudioContext();
     
     // Multiple quick card sounds to simulate dealing/laying out
@@ -30,7 +34,7 @@ function playCardDeal() {
             filter.connect(gainNode);
             gainNode.connect(audioContext.destination);
             
-            gainNode.gain.setValueAtTime(0.12, audioContext.currentTime);
+            gainNode.gain.setValueAtTime(0.12 * globalVolume, audioContext.currentTime);
             gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
             
             noise.start();
@@ -41,6 +45,7 @@ function playCardDeal() {
 
 // HOLD CARD - Lower pitched beep when selecting hold
 function playCardHold() {
+    if (globalVolume === 0) return;
     const audioContext = new AudioContext();
     const oscillator = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
@@ -51,7 +56,7 @@ function playCardHold() {
     oscillator.frequency.value = 400;
     oscillator.type = 'square';
     
-    gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
+    gainNode.gain.setValueAtTime(0.15 * globalVolume, audioContext.currentTime);
     gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
     
     oscillator.start();
@@ -60,6 +65,7 @@ function playCardHold() {
 
 // DRAW - Lower beep for drawing new cards
 function playCardDraw() {
+    if (globalVolume === 0) return;
     const audioContext = new AudioContext();
     const oscillator = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
@@ -70,7 +76,7 @@ function playCardDraw() {
     oscillator.frequency.value = 600;
     oscillator.type = 'square';
     
-    gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
+    gainNode.gain.setValueAtTime(0.15 * globalVolume, audioContext.currentTime);
     gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.12);
     
     oscillator.start();
@@ -79,6 +85,7 @@ function playCardDraw() {
 
 // SMALL WIN - Classic two-tone casino chime
 function playWinChime() {
+    if (globalVolume === 0) return;
     const audioContext = new AudioContext();
     
     // Two notes: classic "ding-ding"
@@ -98,7 +105,7 @@ function playWinChime() {
         const endTime = startTime + 0.3;
         
         gainNode.gain.setValueAtTime(0, startTime);
-        gainNode.gain.linearRampToValueAtTime(0.25, startTime + 0.01);
+        gainNode.gain.linearRampToValueAtTime(0.25 * globalVolume, startTime + 0.01);
         gainNode.gain.exponentialRampToValueAtTime(0.01, endTime);
         
         oscillator.start(startTime);
@@ -108,6 +115,7 @@ function playWinChime() {
 
 // BIG WIN - Ascending arpeggio for bigger payouts (Full House and up)
 function playBigWin() {
+    if (globalVolume === 0) return;
     const audioContext = new AudioContext();
     
     // Fast ascending notes
@@ -127,7 +135,7 @@ function playBigWin() {
         const endTime = startTime + 0.25;
         
         gainNode.gain.setValueAtTime(0, startTime);
-        gainNode.gain.linearRampToValueAtTime(0.2, startTime + 0.01);
+        gainNode.gain.linearRampToValueAtTime(0.2 * globalVolume, startTime + 0.01);
         gainNode.gain.exponentialRampToValueAtTime(0.01, endTime);
         
         oscillator.start(startTime);
@@ -137,6 +145,7 @@ function playBigWin() {
 
 // JACKPOT - Crazy celebration sound for Royal Flush, Four Deuces, etc!
 function playJackpot() {
+    if (globalVolume === 0) return;
     const audioContext = new AudioContext();
     
     // Rapid alternating high notes
@@ -155,7 +164,7 @@ function playJackpot() {
         const endTime = startTime + 0.15;
         
         gainNode.gain.setValueAtTime(0, startTime);
-        gainNode.gain.linearRampToValueAtTime(0.15, startTime + 0.01);
+        gainNode.gain.linearRampToValueAtTime(0.15 * globalVolume, startTime + 0.01);
         gainNode.gain.exponentialRampToValueAtTime(0.01, endTime);
         
         oscillator.start(startTime);
@@ -179,7 +188,7 @@ function playJackpot() {
             const endTime = startTime + 0.3;
             
             gainNode.gain.setValueAtTime(0, startTime);
-            gainNode.gain.linearRampToValueAtTime(0.25, startTime + 0.01);
+            gainNode.gain.linearRampToValueAtTime(0.25 * globalVolume, startTime + 0.01);
             gainNode.gain.exponentialRampToValueAtTime(0.01, endTime);
             
             oscillator.start(startTime);
@@ -190,6 +199,8 @@ function playJackpot() {
 
 // LOSE SOUND - Descending beeps for losses
 function playLoseSound() {
+    if (globalVolume === 0) return;
+    console.log('🔊 Playing lose sound');
     const audioContext = new AudioContext();
     
     const beeps = [
@@ -212,7 +223,7 @@ function playLoseSound() {
         const endTime = startTime + beep.duration;
         
         gainNode.gain.setValueAtTime(0, startTime);
-        gainNode.gain.linearRampToValueAtTime(0.15, startTime + 0.01);
+        gainNode.gain.linearRampToValueAtTime(0.15 * globalVolume, startTime + 0.01);
         gainNode.gain.linearRampToValueAtTime(0.001, endTime);
         
         oscillator.start(startTime);
@@ -329,4 +340,17 @@ function playJackpotFireworks() {
 // Update window exports to include fireworks
 if (typeof window !== 'undefined') {
     window.playJackpotFireworks = playJackpotFireworks;
+}
+
+// Volume setter - called from main game
+if (typeof window !== 'undefined') {
+    Object.defineProperty(window.casinoSounds, 'volume', {
+        set: function(v) {
+            globalVolume = v;
+            console.log('Volume set to:', v);
+        },
+        get: function() {
+            return globalVolume;
+        }
+    });
 }
