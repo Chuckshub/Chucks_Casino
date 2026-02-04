@@ -188,6 +188,38 @@ function playJackpot() {
     }, 100);
 }
 
+// LOSE SOUND - Descending beeps for losses
+function playLoseSound() {
+    const audioContext = new AudioContext();
+    
+    const beeps = [
+        { freq: 600, start: 0, duration: 0.15 },
+        { freq: 450, start: 0.2, duration: 0.15 },
+        { freq: 300, start: 0.4, duration: 0.3 },
+    ];
+    
+    beeps.forEach(beep => {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.value = beep.freq;
+        oscillator.type = 'square';
+        
+        const startTime = audioContext.currentTime + beep.start;
+        const endTime = startTime + beep.duration;
+        
+        gainNode.gain.setValueAtTime(0, startTime);
+        gainNode.gain.linearRampToValueAtTime(0.15, startTime + 0.01);
+        gainNode.gain.linearRampToValueAtTime(0.001, endTime);
+        
+        oscillator.start(startTime);
+        oscillator.stop(endTime);
+    });
+}
+
 // Export for use in main game
 if (typeof window !== 'undefined') {
     window.casinoSounds = {
@@ -196,7 +228,8 @@ if (typeof window !== 'undefined') {
         cardDraw: playCardDraw,
         smallWin: playWinChime,
         bigWin: playBigWin,
-        jackpot: playJackpot
+        jackpot: playJackpot,
+        lose: playLoseSound
     };
 }
 
