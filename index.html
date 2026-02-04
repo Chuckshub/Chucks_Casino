@@ -3398,6 +3398,11 @@
         }
 
         function toggleSound() {
+            // Don't allow toggling during holding phase in video poker (key 3 holds card 3)
+            if (game && game.state === 'holding' && game.toggleHold) {
+                return;
+            }
+            
             // Cycle through: OFF (0) → MED (0.5) → MAX (1.0) → OFF
             if (soundVolume === 0) {
                 soundVolume = 0.5;
