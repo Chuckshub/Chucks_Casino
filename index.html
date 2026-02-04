@@ -1368,6 +1368,10 @@
                 
                 const playerValue = this.getHandValue(this.playerHand);
                 if (playerValue > 21) {
+                    // Player busted - lose sound
+                    if (window.casinoSounds) {
+                        window.casinoSounds.lose();
+                    }
                     if (this.isSplit && this.currentHandIndex === 0) {
                         // First hand busted, move to second hand
                         this.moveToNextSplitHand();
@@ -1525,7 +1529,10 @@
                         }
                         this.endGame(`BLACKJACK! You WIN $${blackjackPayout}!`, blackjackPayout);
                     } else if (dealerBlackjack) {
-                        // Dealer has blackjack
+                        // Dealer has blackjack - lose sound
+                        if (window.casinoSounds) {
+                            window.casinoSounds.lose();
+                        }
                         this.endGame('Dealer Blackjack - Dealer Wins');
                     } else if (dealerValue > 21) {
                         // Player wins - small win sound
@@ -1540,7 +1547,10 @@
                         }
                         this.endGame(`You WIN $${this.bet * 2}!`, this.bet * 2);
                     } else if (dealerValue > playerValue) {
-                        // Dealer wins - no sound
+                        // Dealer wins - lose sound
+                        if (window.casinoSounds) {
+                            window.casinoSounds.lose();
+                        }
                         this.endGame('Dealer Wins');
                     } else {
                         // Push - no sound
@@ -2037,6 +2047,11 @@
                     }
                 } else {
                     document.getElementById('result').textContent = 'No Win';
+                    
+                    // Play lose sound
+                    if (window.casinoSounds) {
+                        window.casinoSounds.lose();
+                    }
                     
                     // Track loss
                     if (window.stats && window.stats.gameResult) {
