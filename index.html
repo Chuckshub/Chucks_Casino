@@ -629,7 +629,7 @@
                     </div>
                     <button onclick="returnToHome()" class="control-btn">MENU</button>
                     <button onclick="console.log('Options')" class="control-btn">OPTIONS</button>
-                    <button onclick="toggleSound()" class="control-btn">SOUND: MED</button>
+                    <button onclick="toggleSound()" class="control-btn">🔉&nbsp;███░░</button>
                     <div class="bet-display">
                         <div class="bet-label">BET</div>
                         <div class="bet-amount" id="bet-amount">$1</div>
@@ -647,7 +647,7 @@
                     </div>
                     <button onclick="returnToHome()" class="control-btn">MENU</button>
                     <button onclick="console.log('Options')" class="control-btn">OPTIONS</button>
-                    <button onclick="toggleSound()" class="control-btn">SOUND: MED</button>
+                    <button onclick="toggleSound()" class="control-btn">🔉&nbsp;███░░</button>
                     <div class="bet-display">
                         <div class="bet-label">BET</div>
                         <div class="bet-amount" id="bet-amount-hold">$1</div>
@@ -672,7 +672,7 @@
                     </div>
                     <button onclick="returnToHome()" class="control-btn">MENU</button>
                     <button onclick="console.log('Options')" class="control-btn">OPTIONS</button>
-                    <button onclick="toggleSound()" class="control-btn">SOUND: MED</button>
+                    <button onclick="toggleSound()" class="control-btn">🔉&nbsp;███░░</button>
                     <div class="bet-display">
                         <div class="bet-label">BET</div>
                         <div class="bet-amount" id="bet-amount-result">$1</div>
@@ -3407,17 +3407,30 @@
                 soundVolume = 0;
             }
             
+            // Create volume bar visualization (like signal strength bars)
+            let volumeBar = '';
+            const totalBars = 5;
+            const activeBars = Math.floor(soundVolume * totalBars);
+            
+            for (let i = 0; i < totalBars; i++) {
+                if (i < activeBars) {
+                    volumeBar += '█';
+                } else {
+                    volumeBar += '░';
+                }
+            }
+            
             // Update all SOUND buttons across all control bars
             const soundButtons = document.querySelectorAll('button[onclick*="toggleSound"]');
             soundButtons.forEach(btn => {
                 if (soundVolume === 0) {
-                    btn.textContent = 'SOUND: OFF';
+                    btn.innerHTML = `🔇&nbsp;${volumeBar}`;
                     btn.style.background = 'linear-gradient(180deg, #999 0%, #666 100%)';
                 } else if (soundVolume === 0.5) {
-                    btn.textContent = 'SOUND: MED';
+                    btn.innerHTML = `🔉&nbsp;${volumeBar}`;
                     btn.style.background = 'linear-gradient(180deg, #FFD700 0%, #FFA500 100%)';
                 } else {
-                    btn.textContent = 'SOUND: MAX';
+                    btn.innerHTML = `🔊&nbsp;${volumeBar}`;
                     btn.style.background = 'linear-gradient(180deg, #00FF00 0%, #00AA00 100%)';
                 }
             });
