@@ -3464,8 +3464,8 @@
             
             // Set game-specific padding for cards area
             if (gameType === 'jacks' || gameType === 'deuces' || gameType === 'multihand' || gameType === 'spinpoker' || gameType === 'threecard') {
-                cardsArea.style.paddingTop = '20px'; // Video poker games - cards near top
-                document.getElementById('result').style.top = '320px'; // Lower - more space below pay table
+                cardsArea.style.paddingTop = '50px'; // Video poker games - cards slightly lower
+                document.getElementById('result').style.top = '350px'; // Lower - more clearance from pay table
             } else if (gameType === 'blackjack') {
                 cardsArea.style.paddingTop = '180px'; // Blackjack - cards more centered
                 document.getElementById('result').style.top = '100px'; // Higher - prominent at top
