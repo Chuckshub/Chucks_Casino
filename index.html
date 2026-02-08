@@ -587,12 +587,8 @@
                     DEUCES WILD
                 </button>
                 <br>
-                <button class="game-button" onclick="startGame('multihand')">
-                    MULTI-HAND POKER (6-26 HANDS)
-                </button>
-                <br>
-                <button class="game-button" onclick="startGame('spinpoker')">
-                    SPIN POKER
+                <button class="game-button" onclick="startGame('baccarat')">
+                    BACCARAT
                 </button>
                 <br>
                 <button class="game-button" onclick="startGame('blackjack')">
@@ -826,6 +822,446 @@
             'Three of a Kind': 4,
             'Straight': 1
         };
+
+        class BaccaratGame {
+            constructor() {
+                this.deck = new Deck();
+                this.playerHand = [];
+                this.bankerHand = [];
+                this.bet = 1;
+                this.betType = null; // 'player', 'banker', 'tie', 'playerPair', 'bankerPair'
+                this.bets = { player: 0, banker: 0, tie: 0, playerPair: 0, bankerPair: 0 };
+                this.cash = globalCash;
+                this.state = 'betting'; // betting, dealing, result
+                this.cardsToAnimate = [];
+            }
+
+            placeBet(betType) {
+                if (this.state !== 'betting') return;
+                if (this.bet > this.cash) {
+                    document.getElementById('result').textContent = 'Insufficient Credits!';
+                    return;
+                }
+                
+                // Add bet to the selected type
+                this.bets[betType] += this.bet;
+                this.cash -= this.bet;
+                globalCash = this.cash;
+                updateHomeCash();
+                
+                this.updateDisplay();
+            }
+
+            clearBets() {
+                if (this.state !== 'betting') return;
+                
+                // Refund all bets
+                const totalBets = Object.values(this.bets).reduce((sum, b) => sum + b, 0);
+                this.cash += totalBets;
+                globalCash = this.cash;
+                updateHomeCash();
+                
+                this.bets = { player: 0, banker: 0, tie: 0, playerPair: 0, bankerPair: 0 };
+                this.updateDisplay();
+            }
+
+            deal() {
+                if (this.state !== 'betting') return;
+                
+                const totalBets = Object.values(this.bets).reduce((sum, b) => sum + b, 0);
+                if (totalBets === 0) {
+                    document.getElementById('result').textContent = 'Place a bet first!';
+                    return;
+                }
+                
+                // Play card dealing sound
+                if (window.casinoSounds) {
+                    window.casinoSounds.cardDeal();
+                }
+                
+                this.deck.reset();
+                this.playerHand = [];
+                this.bankerHand = [];
+                
+                // Deal initial cards (2 to each)
+                this.playerHand.push(this.deck.deal(1)[0]);
+                this.bankerHand.push(this.deck.deal(1)[0]);
+                this.playerHand.push(this.deck.deal(1)[0]);
+                this.bankerHand.push(this.deck.deal(1)[0]);
+                
+                this.cardsToAnimate = [0, 1, 2, 3];
+                this.state = 'dealing';
+                
+                document.getElementById('betting-controls').classList.add('hidden');
+                document.getElementById('result').textContent = '';
+                
+                this.renderCards();
+                
+                // Auto-play according to baccarat rules
+                setTimeout(() => this.applyBaccaratRules(), 1000);
+            }
+
+            applyBaccaratRules() {
+                const playerTotal = this.getHandValue(this.playerHand);
+                const bankerTotal = this.getHandValue(this.bankerHand);
+                
+                // Natural win (8 or 9)
+                if (playerTotal >= 8 || bankerTotal >= 8) {
+                    this.determineWinner();
+                    return;
+                }
+                
+                // Player draws third card if 0-5
+                if (playerTotal <= 5) {
+                    const card = this.deck.deal(1)[0];
+                    this.playerHand.push(card);
+                    this.cardsToAnimate = [this.playerHand.length - 1];
+                    this.renderCards();
+                    
+                    setTimeout(() => this.bankerDrawLogic(), 500);
+                } else {
+                    this.bankerDrawLogic();
+                }
+            }
+
+            bankerDrawLogic() {
+                const bankerTotal = this.getHandValue(this.bankerHand);
+                const playerThirdCard = this.playerHand[2] ? this.playerHand[2].value % 10 : null;
+                
+                let bankerDraws = false;
+                
+                if (this.playerHand.length === 2) {
+                    // Player stood, banker draws on 0-5
+                    bankerDraws = bankerTotal <= 5;
+                } else {
+                    // Complex banker drawing rules based on player's third card
+                    if (bankerTotal <= 2) bankerDraws = true;
+                    else if (bankerTotal === 3) bankerDraws = playerThirdCard !== 8;
+                    else if (bankerTotal === 4) bankerDraws = [2,3,4,5,6,7].includes(playerThirdCard);
+                    else if (bankerTotal === 5) bankerDraws = [4,5,6,7].includes(playerThirdCard);
+                    else if (bankerTotal === 6) bankerDraws = [6,7].includes(playerThirdCard);
+                }
+                
+                if (bankerDraws) {
+                    const card = this.deck.deal(1)[0];
+                    this.bankerHand.push(card);
+                    this.cardsToAnimate = [100 + this.bankerHand.length - 1];
+                    this.renderCards();
+                    setTimeout(() => this.determineWinner(), 500);
+                } else {
+                    this.determineWinner();
+                }
+            }
+
+            determineWinner() {
+                const playerTotal = this.getHandValue(this.playerHand);
+                const bankerTotal = this.getHandValue(this.bankerHand);
+                
+                // Check for pairs
+                const playerPair = this.playerHand.length >= 2 && 
+                    this.playerHand[0].rank === this.playerHand[1].rank;
+                const bankerPair = this.bankerHand.length >= 2 && 
+                    this.bankerHand[0].rank === this.bankerHand[1].rank;
+                
+                let totalWin = 0;
+                let message = '';
+                
+                // Evaluate bets
+                if (playerTotal > bankerTotal) {
+                    message = `Player ${playerTotal} - Banker ${bankerTotal} | PLAYER WINS!`;
+                    totalWin += this.bets.player * 2; // 1:1 payout
+                } else if (bankerTotal > playerTotal) {
+                    message = `Player ${playerTotal} - Banker ${bankerTotal} | BANKER WINS!`;
+                    totalWin += this.bets.banker * 2; // 1:1 payout
+                } else {
+                    message = `Player ${playerTotal} - Banker ${bankerTotal} | TIE!`;
+                    totalWin += this.bets.tie * 9; // 8:1 payout
+                    totalWin += this.bets.player; // Return player bet
+                    totalWin += this.bets.banker; // Return banker bet
+                }
+                
+                // Pair bonuses
+                if (playerPair) {
+                    totalWin += this.bets.playerPair * 12; // 11:1 payout
+                    message += ' +Player Pair!';
+                }
+                if (bankerPair) {
+                    totalWin += this.bets.bankerPair * 12; // 11:1 payout
+                    message += ' +Banker Pair!';
+                }
+                
+                this.cash += totalWin;
+                globalCash = this.cash;
+                updateHomeCash();
+                
+                // Play appropriate sound
+                if (window.casinoSounds) {
+                    if (totalWin > 0) {
+                        const netWin = totalWin - Object.values(this.bets).reduce((sum, b) => sum + b, 0);
+                        if (netWin > 0) {
+                            window.casinoSounds.smallWin();
+                        }
+                    } else {
+                        window.casinoSounds.lose();
+                    }
+                }
+                
+                this.state = 'result';
+                document.getElementById('result-controls').classList.remove('hidden');
+                document.getElementById('result').textContent = message;
+                
+                this.updateDisplay();
+            }
+
+            getHandValue(hand) {
+                let total = 0;
+                for (let card of hand) {
+                    let value = card.value;
+                    if (value > 10) value = 0; // Face cards = 0
+                    else if (value === 10) value = 0; // 10 = 0
+                    else value = value; // Ace = 1, 2-9 = face value
+                    total += value;
+                }
+                return total % 10; // Baccarat uses modulo 10
+            }
+
+            newGame() {
+                if (this.cash >= 1) {
+                    this.state = 'betting';
+                    this.bets = { player: 0, banker: 0, tie: 0, playerPair: 0, bankerPair: 0 };
+                    
+                    this.renderCardBacks();
+                    
+                    document.getElementById('result-controls').classList.add('hidden');
+                    document.getElementById('betting-controls').classList.remove('hidden');
+                    document.getElementById('result').innerHTML = 'Place your bets';
+                    
+                    this.updateDisplay();
+                } else {
+                    document.getElementById('result').textContent = 'GAME OVER - No Credits!';
+                }
+            }
+
+            renderCardBacks() {
+                const cardsArea = document.getElementById('cards-area');
+                cardsArea.innerHTML = '';
+                cardsArea.style.display = 'flex';
+                cardsArea.style.justifyContent = 'center';
+                cardsArea.style.alignItems = 'center';
+                cardsArea.style.gap = '60px';
+                
+                // Player section with card backs
+                const playerSection = document.createElement('div');
+                playerSection.style.cssText = 'display: flex; flex-direction: column; align-items: center;';
+                
+                const playerLabel = document.createElement('div');
+                playerLabel.style.cssText = 'text-align: center; color: #AAAAFF; font-size: 32px; font-weight: bold; margin-bottom: 10px;';
+                playerLabel.textContent = 'PLAYER';
+                playerSection.appendChild(playerLabel);
+                
+                const playerRow = document.createElement('div');
+                playerRow.style.cssText = 'display: flex; gap: 8px;';
+                playerRow.appendChild(createCardBack(280, 400));
+                playerRow.appendChild(createCardBack(280, 400));
+                playerSection.appendChild(playerRow);
+                
+                cardsArea.appendChild(playerSection);
+                
+                // Banker section with card backs
+                const bankerSection = document.createElement('div');
+                bankerSection.style.cssText = 'display: flex; flex-direction: column; align-items: center;';
+                
+                const bankerLabel = document.createElement('div');
+                bankerLabel.style.cssText = 'text-align: center; color: #AAAAFF; font-size: 32px; font-weight: bold; margin-bottom: 10px;';
+                bankerLabel.textContent = 'BANKER';
+                bankerSection.appendChild(bankerLabel);
+                
+                const bankerRow = document.createElement('div');
+                bankerRow.style.cssText = 'display: flex; gap: 8px;';
+                bankerRow.appendChild(createCardBack(280, 400));
+                bankerRow.appendChild(createCardBack(280, 400));
+                bankerSection.appendChild(bankerRow);
+                
+                cardsArea.appendChild(bankerSection);
+            }
+
+            updateDisplay() {
+                // Show bet amounts
+                const payTable = document.getElementById('pay-table');
+                if (payTable) {
+                    payTable.style.display = 'inline-block';
+                }
+                
+                let payTableHTML = '';
+                payTableHTML += 'Bet Type              Payout    Your Bet\n';
+                payTableHTML += '=============================================\n';
+                payTableHTML += `Player Wins           1:1       $${this.bets.player}\n`;
+                payTableHTML += `Banker Wins           1:1       $${this.bets.banker}\n`;
+                payTableHTML += `Tie                   8:1       $${this.bets.tie}\n`;
+                payTableHTML += `Player Pair          11:1       $${this.bets.playerPair}\n`;
+                payTableHTML += `Banker Pair          11:1       $${this.bets.bankerPair}\n`;
+                
+                document.getElementById('pay-table').innerHTML = payTableHTML;
+                document.getElementById('info-bar').innerHTML = '';
+                
+                const cashDisplays = ['game-cash-display', 'game-cash-display-hold', 'game-cash-display-result'];
+                cashDisplays.forEach(id => {
+                    const elem = document.getElementById(id);
+                    if (elem) elem.textContent = this.cash;
+                });
+            }
+
+            renderCards() {
+                const cardsArea = document.getElementById('cards-area');
+                cardsArea.innerHTML = '';
+                cardsArea.style.display = 'flex';
+                cardsArea.style.justifyContent = 'center';
+                cardsArea.style.alignItems = 'center';
+                cardsArea.style.gap = '60px';
+                
+                const cardWidth = 280;
+                const cardHeight = 400;
+                const fontSize = 96;
+                
+                // Player section
+                const playerSection = document.createElement('div');
+                playerSection.style.cssText = 'display: flex; flex-direction: column; align-items: center;';
+                
+                const playerLabel = document.createElement('div');
+                playerLabel.style.cssText = 'text-align: center; color: #AAAAFF; font-size: 32px; font-weight: bold; margin-bottom: 10px;';
+                playerLabel.textContent = 'PLAYER';
+                playerSection.appendChild(playerLabel);
+                
+                const playerRow = document.createElement('div');
+                playerRow.style.cssText = 'display: flex; gap: 8px;';
+                
+                this.playerHand.forEach((card, i) => {
+                    const container = this.createCardElement(card, i, false, cardWidth, cardHeight, fontSize);
+                    playerRow.appendChild(container);
+                });
+                playerSection.appendChild(playerRow);
+                
+                const playerTotal = document.createElement('div');
+                playerTotal.style.cssText = 'text-align: center; color: #FFFF00; font-size: 48px; font-weight: bold; margin-top: 10px;';
+                playerTotal.textContent = this.getHandValue(this.playerHand);
+                playerSection.appendChild(playerTotal);
+                
+                cardsArea.appendChild(playerSection);
+                
+                // Banker section
+                const bankerSection = document.createElement('div');
+                bankerSection.style.cssText = 'display: flex; flex-direction: column; align-items: center;';
+                
+                const bankerLabel = document.createElement('div');
+                bankerLabel.style.cssText = 'text-align: center; color: #AAAAFF; font-size: 32px; font-weight: bold; margin-bottom: 10px;';
+                bankerLabel.textContent = 'BANKER';
+                bankerSection.appendChild(bankerLabel);
+                
+                const bankerRow = document.createElement('div');
+                bankerRow.style.cssText = 'display: flex; gap: 8px;';
+                
+                this.bankerHand.forEach((card, i) => {
+                    const container = this.createCardElement(card, i + 100, false, cardWidth, cardHeight, fontSize);
+                    bankerRow.appendChild(container);
+                });
+                bankerSection.appendChild(bankerRow);
+                
+                const bankerTotal = document.createElement('div');
+                bankerTotal.style.cssText = 'text-align: center; color: #FFFF00; font-size: 48px; font-weight: bold; margin-top: 10px;';
+                bankerTotal.textContent = this.getHandValue(this.bankerHand);
+                bankerSection.appendChild(bankerTotal);
+                
+                cardsArea.appendChild(bankerSection);
+                
+                this.cardsToAnimate = [];
+            }
+
+            createCardElement(card, index, faceDown, width = 280, height = 400, centerFontSize = 96) {
+                const container = document.createElement('div');
+                container.style.cssText = 'text-align: center; position: relative;';
+                
+                const cardDiv = document.createElement('div');
+                const isRed = card.suit === '♥' || card.suit === '♦';
+                
+                const shouldAnimate = this.cardsToAnimate.includes(index);
+                if (shouldAnimate) {
+                    cardDiv.className = 'card-dealing';
+                    cardDiv.style.animationDelay = `${(index % 100) * 0.15}s`;
+                }
+                
+                const topFontSize = Math.floor(width * 0.21);
+                const topSuitSize = Math.floor(width * 0.16);
+                const bottomFontSize = Math.floor(width * 0.086);
+                const bottomSuitSize = Math.floor(width * 0.071);
+                
+                cardDiv.style.cssText = `
+                    width: ${width}px;
+                    height: ${height}px;
+                    background: #FFFFFF;
+                    border: 3px solid #333;
+                    border-radius: 8px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    padding: 8px 6px;
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+                    overflow: hidden;
+                    ${shouldAnimate ? `animation-delay: ${(index % 100) * 0.15}s;` : ''}
+                `;
+                
+                const topCorner = document.createElement('div');
+                topCorner.style.cssText = `
+                    text-align: left;
+                    line-height: 1;
+                    color: ${isRed ? '#DD0000' : '#000000'};
+                `;
+                topCorner.innerHTML = `
+                    <div style="font-size: ${topFontSize}px; font-weight: bold;">${card.rank}</div>
+                    <div style="font-size: ${topSuitSize}px;">${card.suit}</div>
+                `;
+                
+                const centerSuit = document.createElement('div');
+                centerSuit.style.cssText = `
+                    text-align: center;
+                    font-size: ${centerFontSize}px;
+                    color: ${isRed ? '#DD0000' : '#000000'};
+                `;
+                centerSuit.textContent = card.suit;
+                
+                const bottomCorner = document.createElement('div');
+                bottomCorner.style.cssText = `
+                    text-align: right;
+                    line-height: 1;
+                    transform: rotate(180deg);
+                    color: ${isRed ? '#DD0000' : '#000000'};
+                `;
+                bottomCorner.innerHTML = `
+                    <div style="font-size: ${bottomFontSize}px; font-weight: bold;">${card.rank}</div>
+                    <div style="font-size: ${bottomSuitSize}px;">${card.suit}</div>
+                `;
+                
+                cardDiv.appendChild(topCorner);
+                cardDiv.appendChild(centerSuit);
+                cardDiv.appendChild(bottomCorner);
+                
+                container.appendChild(cardDiv);
+                return container;
+            }
+
+            setBet(amount) {
+                if (this.state !== 'betting') return;
+                if (amount > this.cash) {
+                    document.getElementById('result').textContent = 'Insufficient Credits!';
+                    return;
+                }
+                this.bet = amount;
+                this.updateDisplay();
+            }
+
+            draw() {
+                // Not used in Baccarat
+            }
+        }
 
         class ThreeCardPokerGame {
             constructor() {
@@ -3465,9 +3901,9 @@
             // Set game-specific padding for cards area
             if (gameType === 'jacks' || gameType === 'deuces' || gameType === 'multihand' || gameType === 'spinpoker' || gameType === 'threecard') {
                 cardsArea.style.paddingTop = '50px'; // Video poker games - cards slightly lower
-                document.getElementById('result').style.top = '350px'; // Lower - more clearance from pay table
-            } else if (gameType === 'blackjack') {
-                cardsArea.style.paddingTop = '180px'; // Blackjack - cards more centered
+                document.getElementById('result').style.top = '280px'; // Between pay table and cards
+            } else if (gameType === 'blackjack' || gameType === 'baccarat') {
+                cardsArea.style.paddingTop = '180px'; // Blackjack/Baccarat - cards more centered
                 document.getElementById('result').style.top = '100px'; // Higher - prominent at top
             }
             
@@ -3535,6 +3971,17 @@
                 document.getElementById('action-button').textContent = 'HIT';
                 document.getElementById('key-help').textContent = 'Keys: H (hit) | S (stand) | D (double) | X (split) | SPACE (deal) | ENTER (continue)';
                 game = new BlackjackGame();
+            } else if (gameType === 'baccarat') {
+                document.getElementById('game-variant').textContent = '[ BACCARAT ]';
+                const variantText = 'BACCARAT';
+                document.getElementById('game-variant-display').textContent = variantText;
+                const holdVariant = document.getElementById('game-variant-display-hold');
+                if (holdVariant) holdVariant.textContent = variantText;
+                const resultVariant = document.getElementById('game-variant-display-result');
+                if (resultVariant) resultVariant.textContent = variantText;
+                document.getElementById('action-button').textContent = 'DEAL';
+                document.getElementById('key-help').textContent = 'Keys: 1-5 (place bets) | SPACE (deal) | ENTER (continue)';
+                game = new BaccaratGame();
             } else if (gameType === 'threecard') {
                 document.getElementById('game-variant').textContent = '[ THREE CARD POKER ]';
                 const variantText = 'THREE CARD POKER';
@@ -3609,6 +4056,9 @@
                 } else if (currentGameType === 'blackjack' && game.state === 'playing') {
                     game.hit(); // Hit in blackjack
                     e.preventDefault();
+                } else if (currentGameType === 'baccarat' && game.state === 'betting') {
+                    game.placeBet('player'); // Bet on player
+                    e.preventDefault();
                 } else if (game.state !== 'holding') {
                     console.log('Options - not yet implemented');
                     e.preventDefault();
@@ -3619,6 +4069,9 @@
                     e.preventDefault();
                 } else if (currentGameType === 'blackjack' && game.state === 'playing') {
                     game.stand(); // Stand in blackjack
+                    e.preventDefault();
+                } else if (currentGameType === 'baccarat' && game.state === 'betting') {
+                    game.placeBet('banker'); // Bet on banker
                     e.preventDefault();
                 } else if (game.state !== 'holding') {
                     toggleSound();
@@ -3631,6 +4084,9 @@
                 } else if (currentGameType === 'blackjack' && game.state === 'playing' && game.canDouble) {
                     game.doubleDown(); // Double in blackjack
                     e.preventDefault();
+                } else if (currentGameType === 'baccarat' && game.state === 'betting') {
+                    game.placeBet('tie'); // Bet on tie
+                    e.preventDefault();
                 } else if (game.state === 'betting') {
                     betUp();
                     e.preventDefault();
@@ -3641,6 +4097,9 @@
                     e.preventDefault();
                 } else if (currentGameType === 'blackjack' && game.state === 'playing' && game.canSplit) {
                     game.split(); // Split in blackjack
+                    e.preventDefault();
+                } else if (currentGameType === 'baccarat' && game.state === 'betting') {
+                    game.clearBets(); // Clear all bets
                     e.preventDefault();
                 } else if (game.state === 'betting') {
                     betMax();
@@ -3704,6 +4163,9 @@
                     game.split();
                     e.preventDefault();
                 }
+            } else if (currentGameType === 'baccarat') {
+                // Keys 1-5 place specific bets when in betting state (not holding)
+                // This overrides the normal key behavior for baccarat
             } else if (currentGameType === 'threecard') {
                 // P for Play
                 if (key === 'p' && game.state === 'playing') {
