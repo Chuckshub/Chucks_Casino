@@ -555,41 +555,6 @@
         </div>
     </div>
 
-    <!-- Baccarat Betting Overlay -->
-    <div id="baccarat-betting-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 170, 0.85); display: none; justify-content: center; align-items: center; z-index: 2000;">
-        <div style="background: #0000AA; border: 5px solid #FFFF00; border-radius: 10px; padding: 40px; text-align: center;">
-            <div style="color: #FFFF00; font-size: 32px; font-weight: bold; margin-bottom: 30px; letter-spacing: 4px;">PLACE YOUR BETS</div>
-            <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px;">
-                <button onclick="game && game.placeBet('player')" style="background: #4169E1; color: #FFFFFF; border: 3px solid #FFFFFF; padding: 25px 40px; font-size: 24px; font-weight: bold; font-family: 'Courier New', monospace; cursor: pointer; min-width: 180px; border-radius: 8px;">
-                    PLAYER<br><span style="font-size: 18px;">Pays 1:1</span>
-                </button>
-                <button onclick="game && game.placeBet('banker')" style="background: #DC143C; color: #FFFFFF; border: 3px solid #FFFFFF; padding: 25px 40px; font-size: 24px; font-weight: bold; font-family: 'Courier New', monospace; cursor: pointer; min-width: 180px; border-radius: 8px;">
-                    BANKER<br><span style="font-size: 18px;">Pays 1:1</span>
-                </button>
-                <button onclick="game && game.placeBet('tie')" style="background: #228B22; color: #FFFFFF; border: 3px solid #FFFFFF; padding: 25px 40px; font-size: 24px; font-weight: bold; font-family: 'Courier New', monospace; cursor: pointer; min-width: 180px; border-radius: 8px;">
-                    TIE<br><span style="font-size: 18px;">Pays 8:1</span>
-                </button>
-            </div>
-            <div style="display: flex; gap: 15px; justify-content: center; margin-bottom: 20px;">
-                <button onclick="game && game.placeBet('playerPair')" style="background: #9370DB; color: #FFFFFF; border: 3px solid #FFFFFF; padding: 20px 30px; font-size: 18px; font-weight: bold; font-family: 'Courier New', monospace; cursor: pointer; min-width: 160px; border-radius: 8px;">
-                    PLAYER PAIR<br><span style="font-size: 14px;">Pays 11:1</span>
-                </button>
-                <button onclick="game && game.placeBet('bankerPair')" style="background: #9370DB; color: #FFFFFF; border: 3px solid #FFFFFF; padding: 20px 30px; font-size: 18px; font-weight: bold; font-family: 'Courier New', monospace; cursor: pointer; min-width: 160px; border-radius: 8px;">
-                    BANKER PAIR<br><span style="font-size: 14px;">Pays 11:1</span>
-                </button>
-            </div>
-            <div style="margin-top: 30px; display: flex; gap: 15px; justify-content: center;">
-                <button onclick="game && game.clearBets()" style="background: #FFA500; color: #000000; border: 3px solid #000000; padding: 15px 30px; font-size: 20px; font-weight: bold; font-family: 'Courier New', monospace; cursor: pointer; border-radius: 8px;">
-                    CLEAR BETS
-                </button>
-                <button onclick="closeBaccaratOverlay(); game && game.deal();" style="background: #FF4500; color: #FFFF00; border: 3px solid #FFFF00; padding: 15px 50px; font-size: 24px; font-weight: bold; font-family: 'Courier New', monospace; cursor: pointer; border-radius: 8px;">
-                    DEAL
-                </button>
-            </div>
-            <div id="baccarat-bet-display" style="margin-top: 25px; color: #AAAAFF; font-size: 18px; min-height: 60px;"></div>
-        </div>
-    </div>
-
     <div id="game-container">
         <!-- HOME SCREEN -->
         <div id="home-screen">
@@ -917,6 +882,20 @@
             }
 
             deal() {
+                // If this is the first call (initial state), switch to betting mode
+                if (this.state === 'betting' && Object.values(this.bets).reduce((sum, b) => sum + b, 0) === 0) {
+                    // Enter betting mode - change buttons
+                    this.state = 'placing_bets';
+                    setBaccaratBettingMode();
+                    document.getElementById('result').textContent = 'Place your bets - click buttons below';
+                    return;
+                }
+                
+                // If in placing_bets state, this means user clicked DEAL to start game
+                if (this.state === 'placing_bets') {
+                    this.state = 'betting'; // Move to dealing state
+                }
+                
                 if (this.state !== 'betting') return;
                 
                 const totalBets = Object.values(this.bets).reduce((sum, b) => sum + b, 0);
@@ -1058,6 +1037,10 @@
                 }
                 
                 this.state = 'result';
+                
+                // Restore normal buttons after round
+                restoreBaccaratButtons();
+                
                 document.getElementById('result-controls').classList.remove('hidden');
                 document.getElementById('result').textContent = message;
                 
@@ -1085,10 +1068,7 @@
                     
                     document.getElementById('result-controls').classList.add('hidden');
                     document.getElementById('betting-controls').classList.remove('hidden');
-                    document.getElementById('result').innerHTML = 'Place your bets';
-                    
-                    // Show betting overlay
-                    showBaccaratOverlay();
+                    document.getElementById('result').innerHTML = 'Click PLAY to start betting';
                     
                     this.updateDisplay();
                 } else {
@@ -3853,41 +3833,77 @@
             }
         }
 
-        function showBaccaratOverlay() {
-            const overlay = document.getElementById('baccarat-betting-overlay');
-            if (overlay) {
-                overlay.style.display = 'flex';
-                updateBaccaratBetDisplay();
+        // Function to switch buttons to baccarat betting mode
+        function setBaccaratBettingMode() {
+            // Change the bottom buttons to baccarat betting options
+            // We'll use the existing casino-controls div and change button text/onclick
+            const menuBtn = document.querySelector('button[onclick*="returnToHome"]');
+            const optionsBtn = document.querySelectorAll('.control-btn')[1]; // OPTIONS button
+            const soundBtn = document.querySelector('button[onclick*="toggleSound"]');
+            const betUpBtn = document.querySelector('button[onclick*="betUp"]');
+            const betMaxBtn = document.querySelector('button[onclick*="betMax"]');
+            const dealBtn = document.getElementById('deal-draw-btn');
+            
+            // Store original values
+            if (!window.baccaratOriginalButtons) {
+                window.baccaratOriginalButtons = {
+                    menu: { text: menuBtn.innerHTML, onclick: menuBtn.getAttribute('onclick') },
+                    options: { text: optionsBtn.innerHTML, onclick: optionsBtn.getAttribute('onclick') },
+                    sound: { text: soundBtn.innerHTML, onclick: soundBtn.getAttribute('onclick') },
+                    betUp: { text: betUpBtn.innerHTML, onclick: betUpBtn.getAttribute('onclick') },
+                    betMax: { text: betMaxBtn.innerHTML, onclick: betMaxBtn.getAttribute('onclick') }
+                };
             }
+            
+            // Change to betting buttons
+            menuBtn.innerHTML = 'PLAYER<br><span style="font-size: 14px;">1:1</span>';
+            menuBtn.setAttribute('onclick', 'game.placeBet("player")');
+            
+            optionsBtn.innerHTML = 'BANKER<br><span style="font-size: 14px;">1:1</span>';
+            optionsBtn.setAttribute('onclick', 'game.placeBet("banker")');
+            
+            soundBtn.innerHTML = 'TIE<br><span style="font-size: 14px;">8:1</span>';
+            soundBtn.setAttribute('onclick', 'game.placeBet("tie")');
+            
+            betUpBtn.innerHTML = 'P-PAIR<br><span style="font-size: 14px;">11:1</span>';
+            betUpBtn.setAttribute('onclick', 'game.placeBet("playerPair")');
+            
+            betMaxBtn.innerHTML = 'B-PAIR<br><span style="font-size: 14px;">11:1</span>';
+            betMaxBtn.setAttribute('onclick', 'game.placeBet("bankerPair")');
+            
+            dealBtn.textContent = 'DEAL';
         }
 
-        function closeBaccaratOverlay() {
-            const overlay = document.getElementById('baccarat-betting-overlay');
-            if (overlay) {
-                overlay.style.display = 'none';
+        // Function to restore normal buttons
+        function restoreBaccaratButtons() {
+            if (!window.baccaratOriginalButtons) return;
+            
+            const menuBtn = document.querySelector('button[onclick*="returnToHome"], button[onclick*="placeBet"]');
+            const optionsBtn = document.querySelectorAll('.control-btn')[1];
+            const soundBtn = document.querySelectorAll('.control-btn')[2];
+            const betUpBtn = document.querySelector('button[onclick*="betUp"], button[onclick*="placeBet"]');
+            const betMaxBtn = document.querySelector('button[onclick*="betMax"], button[onclick*="placeBet"]');
+            
+            if (menuBtn) {
+                menuBtn.innerHTML = window.baccaratOriginalButtons.menu.text;
+                menuBtn.setAttribute('onclick', window.baccaratOriginalButtons.menu.onclick);
             }
-        }
-
-        function updateBaccaratBetDisplay() {
-            if (!game || !game.bets) return;
-            const display = document.getElementById('baccarat-bet-display');
-            if (!display) return;
-            
-            const totalBet = Object.values(game.bets).reduce((sum, b) => sum + b, 0);
-            let html = '<div style="font-weight: bold; margin-bottom: 10px;">Current Bets:</div>';
-            if (game.bets.player > 0) html += `Player: $${game.bets.player} `;
-            if (game.bets.banker > 0) html += `Banker: $${game.bets.banker} `;
-            if (game.bets.tie > 0) html += `Tie: $${game.bets.tie} `;
-            if (game.bets.playerPair > 0) html += `P-Pair: $${game.bets.playerPair} `;
-            if (game.bets.bankerPair > 0) html += `B-Pair: $${game.bets.bankerPair} `;
-            
-            if (totalBet === 0) {
-                html = '<div style="color: #FFFF00;">Click buttons above to place bets</div>';
-            } else {
-                html += `<div style="margin-top: 10px; font-weight: bold; color: #00FF00;">Total: $${totalBet}</div>`;
+            if (optionsBtn) {
+                optionsBtn.innerHTML = window.baccaratOriginalButtons.options.text;
+                optionsBtn.setAttribute('onclick', window.baccaratOriginalButtons.options.onclick);
             }
-            
-            display.innerHTML = html;
+            if (soundBtn) {
+                soundBtn.innerHTML = window.baccaratOriginalButtons.sound.text;
+                soundBtn.setAttribute('onclick', window.baccaratOriginalButtons.sound.onclick);
+            }
+            if (betUpBtn) {
+                betUpBtn.innerHTML = window.baccaratOriginalButtons.betUp.text;
+                betUpBtn.setAttribute('onclick', window.baccaratOriginalButtons.betUp.onclick);
+            }
+            if (betMaxBtn) {
+                betMaxBtn.innerHTML = window.baccaratOriginalButtons.betMax.text;
+                betMaxBtn.setAttribute('onclick', window.baccaratOriginalButtons.betMax.onclick);
+            }
         }
 
         let game = null;
@@ -4077,12 +4093,9 @@
                 if (holdVariant) holdVariant.textContent = variantText;
                 const resultVariant = document.getElementById('game-variant-display-result');
                 if (resultVariant) resultVariant.textContent = variantText;
-                document.getElementById('action-button').textContent = 'DEAL';
-                document.getElementById('key-help').textContent = 'Keys: Click betting buttons | SPACE (deal) | ENTER (continue)';
+                document.getElementById('action-button').textContent = 'PLAY';
+                document.getElementById('key-help').textContent = 'Click PLAY to enter betting mode';
                 game = new BaccaratGame();
-                
-                // Show betting overlay immediately for baccarat
-                setTimeout(() => showBaccaratOverlay(), 100);
             } else if (gameType === 'threecard') {
                 document.getElementById('game-variant').textContent = '[ THREE CARD POKER ]';
                 const variantText = 'THREE CARD POKER';
