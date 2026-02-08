@@ -555,6 +555,41 @@
         </div>
     </div>
 
+    <!-- Baccarat Betting Overlay -->
+    <div id="baccarat-betting-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 170, 0.85); display: none; justify-content: center; align-items: center; z-index: 2000;">
+        <div style="background: #0000AA; border: 5px solid #FFFF00; border-radius: 10px; padding: 40px; text-align: center;">
+            <div style="color: #FFFF00; font-size: 32px; font-weight: bold; margin-bottom: 30px; letter-spacing: 4px;">PLACE YOUR BETS</div>
+            <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px;">
+                <button onclick="game && game.placeBet('player')" style="background: #4169E1; color: #FFFFFF; border: 3px solid #FFFFFF; padding: 25px 40px; font-size: 24px; font-weight: bold; font-family: 'Courier New', monospace; cursor: pointer; min-width: 180px; border-radius: 8px;">
+                    PLAYER<br><span style="font-size: 18px;">Pays 1:1</span>
+                </button>
+                <button onclick="game && game.placeBet('banker')" style="background: #DC143C; color: #FFFFFF; border: 3px solid #FFFFFF; padding: 25px 40px; font-size: 24px; font-weight: bold; font-family: 'Courier New', monospace; cursor: pointer; min-width: 180px; border-radius: 8px;">
+                    BANKER<br><span style="font-size: 18px;">Pays 1:1</span>
+                </button>
+                <button onclick="game && game.placeBet('tie')" style="background: #228B22; color: #FFFFFF; border: 3px solid #FFFFFF; padding: 25px 40px; font-size: 24px; font-weight: bold; font-family: 'Courier New', monospace; cursor: pointer; min-width: 180px; border-radius: 8px;">
+                    TIE<br><span style="font-size: 18px;">Pays 8:1</span>
+                </button>
+            </div>
+            <div style="display: flex; gap: 15px; justify-content: center; margin-bottom: 20px;">
+                <button onclick="game && game.placeBet('playerPair')" style="background: #9370DB; color: #FFFFFF; border: 3px solid #FFFFFF; padding: 20px 30px; font-size: 18px; font-weight: bold; font-family: 'Courier New', monospace; cursor: pointer; min-width: 160px; border-radius: 8px;">
+                    PLAYER PAIR<br><span style="font-size: 14px;">Pays 11:1</span>
+                </button>
+                <button onclick="game && game.placeBet('bankerPair')" style="background: #9370DB; color: #FFFFFF; border: 3px solid #FFFFFF; padding: 20px 30px; font-size: 18px; font-weight: bold; font-family: 'Courier New', monospace; cursor: pointer; min-width: 160px; border-radius: 8px;">
+                    BANKER PAIR<br><span style="font-size: 14px;">Pays 11:1</span>
+                </button>
+            </div>
+            <div style="margin-top: 30px; display: flex; gap: 15px; justify-content: center;">
+                <button onclick="game && game.clearBets()" style="background: #FFA500; color: #000000; border: 3px solid #000000; padding: 15px 30px; font-size: 20px; font-weight: bold; font-family: 'Courier New', monospace; cursor: pointer; border-radius: 8px;">
+                    CLEAR BETS
+                </button>
+                <button onclick="closeBaccaratOverlay(); game && game.deal();" style="background: #FF4500; color: #FFFF00; border: 3px solid #FFFF00; padding: 15px 50px; font-size: 24px; font-weight: bold; font-family: 'Courier New', monospace; cursor: pointer; border-radius: 8px;">
+                    DEAL
+                </button>
+            </div>
+            <div id="baccarat-bet-display" style="margin-top: 25px; color: #AAAAFF; font-size: 18px; min-height: 60px;"></div>
+        </div>
+    </div>
+
     <div id="game-container">
         <!-- HOME SCREEN -->
         <div id="home-screen">
@@ -829,11 +864,20 @@
                 this.playerHand = [];
                 this.bankerHand = [];
                 this.bet = 1;
-                this.betType = null; // 'player', 'banker', 'tie', 'playerPair', 'bankerPair'
                 this.bets = { player: 0, banker: 0, tie: 0, playerPair: 0, bankerPair: 0 };
                 this.cash = globalCash;
                 this.state = 'betting'; // betting, dealing, result
                 this.cardsToAnimate = [];
+            }
+
+            setBet(amount) {
+                if (this.state !== 'betting') return;
+                if (amount > this.cash) {
+                    document.getElementById('result').textContent = 'Insufficient Credits!';
+                    return;
+                }
+                this.bet = amount;
+                this.updateDisplay();
             }
 
             placeBet(betType) {
@@ -849,7 +893,13 @@
                 globalCash = this.cash;
                 updateHomeCash();
                 
+                // Play hold sound as confirmation
+                if (window.casinoSounds) {
+                    window.casinoSounds.cardHold();
+                }
+                
                 this.updateDisplay();
+                updateBaccaratBetDisplay();
             }
 
             clearBets() {
@@ -863,6 +913,7 @@
                 
                 this.bets = { player: 0, banker: 0, tie: 0, playerPair: 0, bankerPair: 0 };
                 this.updateDisplay();
+                updateBaccaratBetDisplay();
             }
 
             deal() {
@@ -1036,6 +1087,9 @@
                     document.getElementById('betting-controls').classList.remove('hidden');
                     document.getElementById('result').innerHTML = 'Place your bets';
                     
+                    // Show betting overlay
+                    showBaccaratOverlay();
+                    
                     this.updateDisplay();
                 } else {
                     document.getElementById('result').textContent = 'GAME OVER - No Credits!';
@@ -1086,20 +1140,26 @@
             }
 
             updateDisplay() {
-                // Show bet amounts
+                // Show bet amounts and highlight selected
                 const payTable = document.getElementById('pay-table');
                 if (payTable) {
                     payTable.style.display = 'inline-block';
                 }
                 
                 let payTableHTML = '';
+                payTableHTML += `Betting on: ${this.selectedBetType.toUpperCase()} ($${this.betAmount})\n`;
+                payTableHTML += '=============================================\n';
                 payTableHTML += 'Bet Type              Payout    Your Bet\n';
                 payTableHTML += '=============================================\n';
-                payTableHTML += `Player Wins           1:1       $${this.bets.player}\n`;
-                payTableHTML += `Banker Wins           1:1       $${this.bets.banker}\n`;
-                payTableHTML += `Tie                   8:1       $${this.bets.tie}\n`;
-                payTableHTML += `Player Pair          11:1       $${this.bets.playerPair}\n`;
-                payTableHTML += `Banker Pair          11:1       $${this.bets.bankerPair}\n`;
+                
+                // Highlight selected bet type
+                const playerLine = `Player Wins           1:1       $${this.bets.player}\n`;
+                const bankerLine = `Banker Wins           1:1       $${this.bets.banker}\n`;
+                const tieLine = `Tie                   8:1       $${this.bets.tie}\n`;
+                
+                payTableHTML += this.selectedBetType === 'player' ? `<span class="highlight">${playerLine}</span>` : playerLine;
+                payTableHTML += this.selectedBetType === 'banker' ? `<span class="highlight">${bankerLine}</span>` : bankerLine;
+                payTableHTML += this.selectedBetType === 'tie' ? `<span class="highlight">${tieLine}</span>` : tieLine;
                 
                 document.getElementById('pay-table').innerHTML = payTableHTML;
                 document.getElementById('info-bar').innerHTML = '';
@@ -3793,6 +3853,43 @@
             }
         }
 
+        function showBaccaratOverlay() {
+            const overlay = document.getElementById('baccarat-betting-overlay');
+            if (overlay) {
+                overlay.style.display = 'flex';
+                updateBaccaratBetDisplay();
+            }
+        }
+
+        function closeBaccaratOverlay() {
+            const overlay = document.getElementById('baccarat-betting-overlay');
+            if (overlay) {
+                overlay.style.display = 'none';
+            }
+        }
+
+        function updateBaccaratBetDisplay() {
+            if (!game || !game.bets) return;
+            const display = document.getElementById('baccarat-bet-display');
+            if (!display) return;
+            
+            const totalBet = Object.values(game.bets).reduce((sum, b) => sum + b, 0);
+            let html = '<div style="font-weight: bold; margin-bottom: 10px;">Current Bets:</div>';
+            if (game.bets.player > 0) html += `Player: $${game.bets.player} `;
+            if (game.bets.banker > 0) html += `Banker: $${game.bets.banker} `;
+            if (game.bets.tie > 0) html += `Tie: $${game.bets.tie} `;
+            if (game.bets.playerPair > 0) html += `P-Pair: $${game.bets.playerPair} `;
+            if (game.bets.bankerPair > 0) html += `B-Pair: $${game.bets.bankerPair} `;
+            
+            if (totalBet === 0) {
+                html = '<div style="color: #FFFF00;">Click buttons above to place bets</div>';
+            } else {
+                html += `<div style="margin-top: 10px; font-weight: bold; color: #00FF00;">Total: $${totalBet}</div>`;
+            }
+            
+            display.innerHTML = html;
+        }
+
         let game = null;
         let soundVolume = 0.5; // 0 = off, 0.5 = medium, 1.0 = max
 
@@ -3811,6 +3908,7 @@
                 'multihand': 'MULTI-HAND',
                 'spinpoker': 'SPIN POKER',
                 'blackjack': 'BLACKJACK',
+                'baccarat': 'BACCARAT',
                 'threecard': 'THREE CARD'
             };
             const variantName = gameNames[currentGameType] || 'VIDEO POKER';
@@ -3980,8 +4078,11 @@
                 const resultVariant = document.getElementById('game-variant-display-result');
                 if (resultVariant) resultVariant.textContent = variantText;
                 document.getElementById('action-button').textContent = 'DEAL';
-                document.getElementById('key-help').textContent = 'Keys: 1-5 (place bets) | SPACE (deal) | ENTER (continue)';
+                document.getElementById('key-help').textContent = 'Keys: Click betting buttons | SPACE (deal) | ENTER (continue)';
                 game = new BaccaratGame();
+                
+                // Show betting overlay immediately for baccarat
+                setTimeout(() => showBaccaratOverlay(), 100);
             } else if (gameType === 'threecard') {
                 document.getElementById('game-variant').textContent = '[ THREE CARD POKER ]';
                 const variantText = 'THREE CARD POKER';
@@ -4057,7 +4158,7 @@
                     game.hit(); // Hit in blackjack
                     e.preventDefault();
                 } else if (currentGameType === 'baccarat' && game.state === 'betting') {
-                    game.placeBet('player'); // Bet on player
+                    game.cycleBetType(); // Cycle through Player/Banker/Tie
                     e.preventDefault();
                 } else if (game.state !== 'holding') {
                     console.log('Options - not yet implemented');
@@ -4069,9 +4170,6 @@
                     e.preventDefault();
                 } else if (currentGameType === 'blackjack' && game.state === 'playing') {
                     game.stand(); // Stand in blackjack
-                    e.preventDefault();
-                } else if (currentGameType === 'baccarat' && game.state === 'betting') {
-                    game.placeBet('banker'); // Bet on banker
                     e.preventDefault();
                 } else if (game.state !== 'holding') {
                     toggleSound();
@@ -4085,7 +4183,7 @@
                     game.doubleDown(); // Double in blackjack
                     e.preventDefault();
                 } else if (currentGameType === 'baccarat' && game.state === 'betting') {
-                    game.placeBet('tie'); // Bet on tie
+                    game.placeBet(); // Place bet on selected type
                     e.preventDefault();
                 } else if (game.state === 'betting') {
                     betUp();
